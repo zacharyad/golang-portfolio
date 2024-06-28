@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Search</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <img  src="/static/logo.png" width="200px" alt="">
+        <h1>Locked Manhattan Waiver Search</h1>
+        <div class="search-container">
+            <input type="text" id="search" placeholder="Search bookings...">
+            <button id="clear-search" class="hidden">Clear</button>
+            <button id="see-all" class="button">See Todays Bookings</button>
+        </div>
+        
+        <div class="spacer"></div>
+        <div id="searching-animation" class="hidden">
+            <p>Keep typing to find your booking...</p>
+            <div class="spinner"></div>
+        </div>
+        <ul id="results"></ul>
+        <div id="no-results" class="hidden">Currently no results found</div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>
