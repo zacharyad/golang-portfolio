@@ -107,3 +107,45 @@ func performSearch(query string) []Item {
 
 	return results
 }
+
+type Booking struct {
+	name       string // contact.name on bookings array
+	email      string // contact.email on bookings array
+	phone      string // contact.email on bookings array
+	uuid       string // uuid on bookings array
+	start_time string // availability.start_time on booking req
+	room_name  string // availability.item.name on booking req
+	group_size byte   // availability.capacity on booking req
+}
+
+func fetchBookingsForToday() ([]Booking, error) {
+	// get all bookings
+	// range over to create Booking for each item found and firing off another api request to get specific booking info
+	// bookin info for each will include: start_time, room_name, and group_size.
+
+	user1 := Booking{
+		name:       "zach Droge",
+		email:      "zachEmail@email.com",
+		phone:      "7853417421",
+		uuid:       "1234uuid-8932-78976932-674326732",
+		start_time: "2023-08-18T03:30:00-0600",
+		room_name:  "The Witching Hour",
+		group_size: 8,
+	}
+
+	returnArray := []Booking{}
+
+	returnArray = append(returnArray, user1)
+
+	if len(returnArray) == 0 {
+		return nil, fmt.Errorf("error in constructing Today's Users array")
+	}
+
+	return returnArray, nil
+}
+
+// baseURL := "https://fareharbor.com/api/external/v1/companies/<shortname>"
+
+// firstReq := baseURL + "/availabilities/<availability.pk>/bookings/"
+
+//baseURL + "/bookings/<Booking.uuid>/"

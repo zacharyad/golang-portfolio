@@ -9,17 +9,21 @@
 </head>
 <body>
     <div class="container">
-        <img  src="/static/logo.png" width="200px" alt="">
-        <h1>Locked Manhattan Waiver Search</h1>
-        <div class="search-container">
-            <input type="text" id="search" placeholder="Search bookings...">
+      <div class="hero">
+         <img  src="/static/logo.png" width="200px" alt="">
+        <h1> 's <span id="span">Waiver Search</span></h1>
+      </div>
+       <p><em>Search using name, email, or phone number of the person that booked your reservation.</em></p>
+        <div class="search-container"> 
+          
+            <input type="text" id="search" placeholder="Search with name, phone, or email...">
             <button id="clear-search" class="hidden">Clear</button>
             <button id="see-all" class="button">See Todays Bookings</button>
         </div>
         
         <div class="spacer"></div>
         <div id="searching-animation" class="hidden">
-            <p>Keep typing to find your booking...</p>
+            <p id="search-msg">Keep typing to find your booking...</p>
             <div class="spinner"></div>
         </div>
         <ul id="results"></ul>
