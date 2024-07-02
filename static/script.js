@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const searchingAnimation = document.getElementById('searching-animation');
   const searchingText = document.getElementById('search-msg');
 
+  function addRoomToSearch(e) {
+    console.log(e);
+  }
+
   let bookings = [];
 
   function fetchBookings() {
@@ -151,7 +155,8 @@ document.addEventListener('DOMContentLoaded', function () {
       searchTerms.every(
         (term) =>
           isSearchTermValid(term, booking.name) ||
-          isSearchTermValid(term, booking.email)
+          isSearchTermValid(term, booking.email) ||
+          isSearchTermValid(term, booking.room_name)
       )
     );
 

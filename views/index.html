@@ -25,9 +25,34 @@
             <p id="search-msg">Keep typing to find your booking...</p>
             <div class="spinner"></div>
         </div>
+        <div class="room filter">
+          <div>
+            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="the-witching-hour">The Witching Hour</button>
+          </div>
+          <div>
+            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="the-dinner-party">The Dinner Party</button>
+          </div>
+          <div>
+            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="the-order-of-the-veil">The Order of the Veil</button>
+          </div>
+          <div>
+            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="enter-sequence">Enter Sequence</button>
+          </div>
+          <div>
+            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="exit-strategy">Exit Strategy</button>
+          </div>
+          <div>
+            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="pet-project">Pet Project</button>
+          </div>
+          <div>
+            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="kingdom-quest">Kingdom Quest</button>
+          </div>
+        </div>
         <ul id="results">
+          
+        </ul>
         <div id="no-results" class="hidden">Currently no results found</div>
     </div>
-    <script src="/static/script.js"></script>
+    <script type="text/javascript" src="/static/script.js"></script>
 </body>
 </html>
