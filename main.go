@@ -11,7 +11,6 @@ import (
 type Booking struct {
 	Name      string `json:"name"`
 	Email     string `json:"email"`
-	Phone     string `json:"phone"`
 	UUID      string `json:"uuid"`
 	StartTime string `json:"start_time"`
 	RoomName  string `json:"room_name"`
@@ -20,27 +19,27 @@ type Booking struct {
 
 var dummyBookings = []Booking{
 	{
-		Name:      "John Doe",
-		Email:     "john.doe@example.com",
-		Phone:     "123-456-7890",
+		Name:  "John Doe",
+		Email: "johnD@example.com",
+
 		UUID:      "b1f5e-d3c2a-98765",
 		StartTime: "2024-07-15T14:00:00Z",
 		RoomName:  "Enter Sequence",
 		GroupSize: 5,
 	},
 	{
-		Name:      "Jane Smith",
-		Email:     "jane.smith@example.com",
-		Phone:     "987-654-3210",
+		Name:  "Jane Smith",
+		Email: "jane.smith@example.com",
+
 		UUID:      "a2b3c-e4f5d-12345",
 		StartTime: "2024-07-16T10:30:00Z",
 		RoomName:  "The Witching Hour",
 		GroupSize: 3,
 	},
 	{
-		Name:      "Bob Johnson",
-		Email:     "bob.johnson@example.com",
-		Phone:     "555-123-4567",
+		Name:  "Bob Johnson",
+		Email: "bob.johnson@example.com",
+
 		UUID:      "c6d7e-f8g9h-56789",
 		StartTime: "2024-07-17T09:00:00Z",
 		RoomName:  "The Dinner Party",
@@ -49,16 +48,15 @@ var dummyBookings = []Booking{
 	{
 		Name:      "Alice Brown",
 		Email:     "alice.brown@example.com",
-		Phone:     "111-222-3333",
 		UUID:      "i9j8k-l7m6n-24680",
 		StartTime: "2024-07-18T13:45:00Z",
 		RoomName:  "Kingdom Quest",
 		GroupSize: 4,
 	},
 	{
-		Name:      "Charlie Wilson",
-		Email:     "charlie.wilson@example.com",
-		Phone:     "444-555-6666",
+		Name:  "Charlie Wilson",
+		Email: "charlie.wilson@example.com",
+
 		UUID:      "o5p4q-r3s2t-13579",
 		StartTime: "2024-07-19T11:15:00Z",
 		RoomName:  "Enter Sequence",

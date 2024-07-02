@@ -20,6 +20,27 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
+  function formattedEmail(email) {
+    let emailArr = email.split('@');
+    let [addr, domain] = emailArr;
+    let truncChar = '.';
+    let splitIdx = Math.round(addr.length / 2);
+    let truncAddr = addr.slice(0, splitIdx);
+    let truncation = truncChar.repeat(addr.length - splitIdx);
+
+    return `${truncAddr}${truncation}@${domain}`;
+  }
+
+  function formattedDate(dateString) {
+    return new Date(dateString).toLocaleString();
+  }
+
+  function formattedBookingName(bookingName) {
+    let [fName, lName] = bookingName.split(' ');
+
+    return `${fName} ${lName.slice(0, 1)}.`;
+  }
+
   function displayBookings(bookingsToDisplay) {
     results.innerHTML = '';
     if (bookingsToDisplay.length === 0) {
@@ -34,22 +55,17 @@ document.addEventListener('DOMContentLoaded', function () {
         card.setAttribute('data-contact', booking.name);
         card.setAttribute('data-uuid', booking.uuid);
 
-        const truncEmail = `${booking.email.split('@')[0].slice(0, 3)}...@${
-          booking.email.split('@')[1]
-        }`;
-        const formattedDateOfBooking = new Date(
-          booking.start_time
-        ).toLocaleString();
-
+        const truncEmail = formattedEmail(booking.email);
+        const formattedDateOfBooking = formattedDate(booking.start_time);
+        const formattedTruncBookingName = formattedBookingName(booking.name);
         card.innerHTML = `
           <div class="card-content">
             <h3>${booking.room_name}</h3>
             <p>Start Time: <strong><u>${formattedDateOfBooking}</u></strong></p>
-            <p>Booked By: ${booking.name}</p>
+            <p>Booked By: ${formattedTruncBookingName}</p>
             </div>
             <div class="card-expanded hidden">
             <p>Booking's Email: ${truncEmail}</p>
-            <p>Booking's Phone: ${booking.phone}</p>
             <p>Group Size: ${booking.group_size}</p>
             <hr>
             <p id="confirm-text">Is this the correct booking?</p>
@@ -100,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function isSearchTermValid(term, value) {
     return (
-      term.length >= Math.ceil(value.split(' ')[0].length / 2) &&
+      term.length >= Math.ceil(value.split(' ')[0].length / 3) &&
       value.toLowerCase().includes(term)
     );
   }
@@ -135,8 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
       searchTerms.every(
         (term) =>
           isSearchTermValid(term, booking.name) ||
-          isSearchTermValid(term, booking.email) ||
-          isSearchTermValid(term, booking.phone)
+          isSearchTermValid(term, booking.email)
       )
     );
 
