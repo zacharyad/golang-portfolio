@@ -1,28 +1,70 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
-	"strings"
 
-	"github.com/go-resty/resty/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
 )
 
-type ApiResponse struct {
-	Data []Item `json:"data"`
+type Booking struct {
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	Phone     string `json:"phone"`
+	UUID      string `json:"uuid"`
+	StartTime string `json:"start_time"`
+	RoomName  string `json:"room_name"`
+	GroupSize byte   `json:"group_size"`
 }
 
-type Item struct {
-	Title string `json:"title"`
-	ID    int    `json:"id"`
-	UUID  int    `json:"userid"`
+var dummyBookings = []Booking{
+	{
+		Name:      "John Doe",
+		Email:     "john.doe@example.com",
+		Phone:     "123-456-7890",
+		UUID:      "b1f5e-d3c2a-98765",
+		StartTime: "2024-07-15T14:00:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 5,
+	},
+	{
+		Name:      "Jane Smith",
+		Email:     "jane.smith@example.com",
+		Phone:     "987-654-3210",
+		UUID:      "a2b3c-e4f5d-12345",
+		StartTime: "2024-07-16T10:30:00Z",
+		RoomName:  "The Witching Hour",
+		GroupSize: 3,
+	},
+	{
+		Name:      "Bob Johnson",
+		Email:     "bob.johnson@example.com",
+		Phone:     "555-123-4567",
+		UUID:      "c6d7e-f8g9h-56789",
+		StartTime: "2024-07-17T09:00:00Z",
+		RoomName:  "The Dinner Party",
+		GroupSize: 8,
+	},
+	{
+		Name:      "Alice Brown",
+		Email:     "alice.brown@example.com",
+		Phone:     "111-222-3333",
+		UUID:      "i9j8k-l7m6n-24680",
+		StartTime: "2024-07-18T13:45:00Z",
+		RoomName:  "Kingdom Quest",
+		GroupSize: 4,
+	},
+	{
+		Name:      "Charlie Wilson",
+		Email:     "charlie.wilson@example.com",
+		Phone:     "444-555-6666",
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 2,
+	},
 }
-
-var items []Item
 
 func main() {
 	// Create a new engine for HTML templates
@@ -33,14 +75,13 @@ func main() {
 		Views: engine,
 	})
 
-	// Fetch items from external API on startup
-	fetchItems()
-
 	// Route for the root path
-	app.Get("/", handleSearch)
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.Render("index", fiber.Map{})
+	})
 
-	// API route for AJAX searches
-	app.Get("/api/search", handleAPISearch)
+	// API route for fetching bookings
+	app.Get("/api/bookings", handleBookings)
 
 	// Serve static files for CSS and JavaScript
 	app.Static("/static", "./static")
@@ -49,103 +90,122 @@ func main() {
 	log.Fatal(app.Listen(":3000"))
 }
 
-func fetchItems() {
-	client := resty.New()
-
-	// Query the external API
-	resp, err := client.R().Get("https://jsonplaceholder.typicode.com/todos")
-	if err != nil {
-		log.Fatalf("Failed to query external API: %v", err)
-	}
-
-	var apiResponse ApiResponse
-	err = json.Unmarshal(resp.Body(), &apiResponse.Data)
-
-	if err != nil {
-		log.Fatalf("Failed to parse API response: %v", err)
-	}
-
-	items = apiResponse.Data
-	fmt.Printf("Fetched %d items from external API\n", len(items))
+func handleBookings(c *fiber.Ctx) error {
+	return c.JSON(dummyBookings)
 }
 
-func handleSearch(c *fiber.Ctx) error {
-	query := c.Query("search")
+// package main
 
-	var results []Item
-	if query != "" {
-		results = performSearch(query)
-	} else {
-		results = items // Show all items if no search query
-	}
+// import (
+// 	"encoding/json"
+// 	"fmt"
+// 	"log"
+// 	"net/http"
 
-	return c.Render("index", fiber.Map{
-		"Query": query,
-		"Items": results,
-	})
-}
+// 	"github.com/go-resty/resty/v2"
+// 	"github.com/gofiber/fiber/v2"
+// 	"github.com/gofiber/template/html/v2"
+// )
 
-func handleAPISearch(c *fiber.Ctx) error {
-	query := c.Query("search")
-	results := performSearch(query)
+// type Booking struct {
+// 	Name      string `json:"name"`
+// 	Email     string `json:"email"`
+// 	Phone     string `json:"phone"`
+// 	UUID      string `json:"uuid"`
+// 	StartTime string `json:"start_time"`
+// 	RoomName  string `json:"room_name"`
+// 	GroupSize byte   `json:"group_size"`
+// }
 
-	fmt.Println(results)
-	return c.JSON(results)
-}
+// var Bookings []Booking
 
-func performSearch(query string) []Item {
-	query = strings.ToLower(query)
-	var results []Item
+// func main() {
+// 	// Create a new engine for HTML templates
+// 	engine := html.NewFileSystem(http.Dir("./views"), ".html")
 
-	for _, item := range items {
-		if strings.Contains(strings.ToLower(item.Title), query) ||
-			fmt.Sprintf("%d", item.ID) == query ||
-			fmt.Sprintf("%d", item.UUID) == query {
-			results = append(results, item)
-		}
-	}
+// 	// Create a new Fiber instance
+// 	app := fiber.New(fiber.Config{
+// 		Views: engine,
+// 	})
 
-	return results
-}
+// 	// Route for the root path
+// 	app.Get("/", func(c *fiber.Ctx) error {
+// 		return c.Render("index", fiber.Map{})
+// 	})
 
-type Booking struct {
-	name       string // contact.name on bookings array
-	email      string // contact.email on bookings array
-	phone      string // contact.email on bookings array
-	uuid       string // uuid on bookings array
-	start_time string // availability.start_time on booking req
-	room_name  string // availability.item.name on booking req
-	group_size byte   // availability.capacity on booking req
-}
+// 	// API route for AJAX searches
+// 	app.Get("/api/bookings", handleBookings)
 
-func fetchBookingsForToday() ([]Booking, error) {
-	// get all bookings
-	// range over to create Booking for each item found and firing off another api request to get specific booking info
-	// bookin info for each will include: start_time, room_name, and group_size.
+// 	// Serve static files for CSS and JavaScript
+// 	app.Static("/static", "./static")
 
-	user1 := Booking{
-		name:       "zach Droge",
-		email:      "zachEmail@email.com",
-		phone:      "7853417421",
-		uuid:       "1234uuid-8932-78976932-674326732",
-		start_time: "2023-08-18T03:30:00-0600",
-		room_name:  "The Witching Hour",
-		group_size: 8,
-	}
+// 	// Start the server
+// 	log.Fatal(app.Listen(":3000"))
+// }
+// func handleBookings(c *fiber.Ctx) error {
+// 	// This is a mock function. Replace it with actual API call and data processing
+// 	bookings := fetchBookings()
+// 	return c.JSON(bookings)
+// }
 
-	returnArray := []Booking{}
+// func fetchBookings() []Booking {
+// 	baseAPIURL := "https://fareharbor.com/api/external/v1/companies/lockedmanhattan"
+// 	client := resty.New()
+// 	availabilityPk := []string{"1234", "4321", "1423"}
+// 	var bookings []Booking
 
-	returnArray = append(returnArray, user1)
+// 	for _, availPK := range availabilityPk {
+// 		apiAllBookingsReqString := fmt.Sprintf("%s/availabilies/%s/bookings", baseAPIURL, availPK)
+// 		// call out to fh api
+// 		resp, err := client.R().Get(apiAllBookingsReqString)
+// 		if err != nil {
+// 			log.Printf("Error calling out to get all bookings for pk: %v \n ", availPK)
+// 			return nil
+// 		}
 
-	if len(returnArray) == 0 {
-		return nil, fmt.Errorf("error in constructing Today's Users array")
-	}
+// 		err = json.Unmarshal(resp.Body(), &bookings)
+// 		if err != nil {
+// 			log.Fatalf("Failed to parse API response: %v", err)
+// 		}
 
-	return returnArray, nil
-}
+// 		// add to bookings slice
+// 		bookings = append(bookings, Booking{})
+// 	}
 
-// baseURL := "https://fareharbor.com/api/external/v1/companies/<shortname>"
+// 	for _, booking := range bookings {
+// 		apiDetailedBookingReqString := fmt.Sprintf("%s/bookings/%s/", baseAPIURL, booking.UUID)
+// 		// call out to fh api
+// 		resp, err := client.R().Get(apiDetailedBookingReqString)
 
-// firstReq := baseURL + "/availabilities/<availability.pk>/bookings/"
+// 		if err != nil {
+// 			return nil
+// 		}
 
-//baseURL + "/bookings/<Booking.uuid>/"
+// 		fmt.Println(resp.Body())
+
+// 		detailedBooking := Booking{}
+
+// 		err = json.Unmarshal(resp.Body(), &detailedBooking)
+// 		if err != nil {
+// 			log.Fatalf("Failed to parse API response: %v", err)
+// 		}
+
+// 		// add completed bookings to the bookings slice
+// 		bookings = append(bookings, detailedBooking)
+// 	}
+
+// 	processedBookings := make([]Booking, len(bookings))
+// 	for i, booking := range bookings {
+// 		processedBookings[i] = Booking{
+// 			Name:      booking.Name,
+// 			Email:     booking.Email,
+// 			Phone:     booking.Phone,
+// 			UUID:      booking.UUID,
+// 			StartTime: booking.StartTime,
+// 			RoomName:  booking.RoomName,
+// 			GroupSize: booking.GroupSize,
+// 		}
+// 	}
+
+// 	return processedBookings
+// }
