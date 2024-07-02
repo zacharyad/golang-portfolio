@@ -5,10 +5,14 @@ document.addEventListener('DOMContentLoaded', function () {
   const noResults = document.getElementById('no-results');
   const searchingAnimation = document.getElementById('searching-animation');
   const searchingText = document.getElementById('search-msg');
+  const roomNameFilterBtns = document.querySelectorAll('.room-filter');
 
-  function addRoomToSearch(e) {
-    console.log(e);
-  }
+  roomNameFilterBtns.forEach((elem) => {
+    elem.addEventListener('click', () => {
+      searchInput.value = elem.innerText;
+      performSearch();
+    });
+  });
 
   let bookings = [];
 
@@ -64,12 +68,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const formattedTruncBookingName = formattedBookingName(booking.name);
         card.innerHTML = `
           <div class="card-content">
-            <h3>${booking.room_name}</h3>
+            <h3>${booking.room_name}: ${formattedTruncBookingName}</h3>
             <p>Start Time: <strong><u>${formattedDateOfBooking}</u></strong></p>
-            <p>Booked By: ${formattedTruncBookingName}</p>
+
             </div>
             <div class="card-expanded hidden">
-            <p>Booking's Email: ${truncEmail}</p>
+            <p><strong>Booking's Email: </strong>${truncEmail}</p>
             <p>Group Size: ${booking.group_size}</p>
             <hr>
             <p id="confirm-text">Is this the correct booking?</p>

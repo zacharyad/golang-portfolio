@@ -62,6 +62,15 @@ var dummyBookings = []Booking{
 		RoomName:  "Enter Sequence",
 		GroupSize: 2,
 	},
+	{
+		Name:  "Billy Griller",
+		Email: "Bill.grill@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 8,
+	},
 }
 
 func main() {

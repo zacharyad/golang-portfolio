@@ -13,8 +13,32 @@
          <img  src="/static/logo.png" width="200px" alt="">
         <h1>Waiver Search</h1>
       </div>
-       <p><em>Search using name or email of the person that booked your reservation.</em></p>
-        <div class="search-container"> 
+
+       <p><em>Search using name or email of the person that booked your reservation OR click the room name to help find your room</em></p>
+       <div class="room filter">
+        <div>
+          <button class="room-filter" data-roomName="the-witching-hour">The Witching Hour</button>
+        </div>
+        <div>
+          <button class="room-filter" data-roomName="the-dinner-party">The Dinner Party</button>
+        </div>
+        <div>
+          <button class="room-filter" data-roomName="the-order-of-the-veil">The Order of the Veil</button>
+        </div>
+        <div>
+          <button class="room-filter" data-roomName="enter-sequence">Enter Sequence</button>
+        </div>
+        <div>
+          <button class="room-filter" data-roomName="exit-strategy">Exit Strategy</button>
+        </div>
+        <div>
+          <button class="room-filter" data-roomName="pet-project">Pet Project</button>
+        </div>
+        <div>
+          <button class="room-filter" data-roomName="kingdom-quest">Kingdom Quest</button>
+        </div>
+      </div>
+       <div class="search-container"> 
           
             <input type="text" id="search" placeholder="'Jane Smith' or 'jane.s@email.com'">
             <button id="clear-search" class="hidden">Clear</button>
@@ -25,29 +49,7 @@
             <p id="search-msg">Keep typing to find your booking...</p>
             <div class="spinner"></div>
         </div>
-        <div class="room filter">
-          <div>
-            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="the-witching-hour">The Witching Hour</button>
-          </div>
-          <div>
-            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="the-dinner-party">The Dinner Party</button>
-          </div>
-          <div>
-            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="the-order-of-the-veil">The Order of the Veil</button>
-          </div>
-          <div>
-            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="enter-sequence">Enter Sequence</button>
-          </div>
-          <div>
-            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="exit-strategy">Exit Strategy</button>
-          </div>
-          <div>
-            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="pet-project">Pet Project</button>
-          </div>
-          <div>
-            <button class="room-filter" onclick="addRoomToSearch()" data-roomName="kingdom-quest">Kingdom Quest</button>
-          </div>
-        </div>
+        
         <ul id="results">
           
         </ul>
