@@ -5,7 +5,7 @@
   --card-background: #FFFFFF;
   --text-color: #000000;
   --text-secondary: #8E8E93;
-  --text-selected: #b1ff89;
+  --text-selected: #F2F2F7;
   --text-warning: #FF3B30;
   --border-radius: 10px;
   --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -78,7 +78,7 @@ p {
 
 #clear-search {
   position: absolute;
-  right: 10px;
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -86,7 +86,11 @@ p {
   color: var(--text-secondary);
   cursor: pointer;
   font-size: 1.2rem;
-  padding: 0;
+  padding: 5px  10px;
+  border-radius: var(--border-radius);
+  background-color: var(--primary-color);
+  color: var(--text-selected);
+  opacity: .7;
 }
 
 #clear-search:hover {

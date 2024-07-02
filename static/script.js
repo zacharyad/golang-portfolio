@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return `${fName} ${lName.slice(0, 1)}.`;
   }
 
-  function displayBookings(bookingsToDisplay) {
+  function displayBookings(bookingsToDisplay, displayOne = false) {
     results.innerHTML = '';
     if (bookingsToDisplay.length === 0) {
       noResults.classList.remove('hidden');
@@ -59,7 +59,8 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       noResults.classList.add('hidden');
       searchingAnimation.classList.add('hidden');
-      bookingsToDisplay.forEach((booking) => {
+
+      bookingsToDisplay.forEach((booking, idx) => {
         const card = document.createElement('div');
         card.classList.add('booking-card');
         card.setAttribute('data-contact', booking.name);
@@ -70,11 +71,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const formattedTruncBookingName = formattedBookingName(booking.name);
         card.innerHTML = `
           <div class="card-content">
-            <h3>${booking.room_name}: ${formattedTruncBookingName}</h3>
+            <h3>${idx + 1}: ${
+          booking.room_name
+        }: ${formattedTruncBookingName}</h3>
             <p>Start Time: <strong><u>${formattedDateOfBooking}</u></strong></p>
 
             </div>
-            <div class="card-expanded hidden">
+            <div class="card-expanded ${displayOne ? 'hidden' : ''}">
             <p><strong>Booking's Email: </strong>${truncEmail}</p>
             <p>Group Size: ${booking.group_size}</p>
             <hr>
@@ -157,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     searchingText.innerText =
       searchValue.length > 8
-        ? 'This booking may not be under your current search text.'
+        ? 'Booking may be under a different name, email, or room name'
         : 'Keep typing to find your booking...';
 
     const filteredBookings = bookings.filter((booking) =>
@@ -169,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
       )
     );
 
-    displayBookings(filteredBookings);
+    displayBookings(filteredBookings, filteredBookings.length > 1);
   }
 
   function clearFilterBtnSelected() {
@@ -195,7 +198,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   searchInput.addEventListener('input', performSearch);
-
   clearSearchButton.addEventListener('click', clearSearch);
 
   window.addEventListener('popstate', function (event) {
