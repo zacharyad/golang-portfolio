@@ -1,11 +1,13 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
+	"github.com/joho/godotenv"
+	"log"
+	"net/http"
+	"os"
 )
 
 type Booking struct {
@@ -74,6 +76,15 @@ var dummyBookings = []Booking{
 }
 
 func main() {
+
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatal("Error loading .env file:", err)
+	}
+
+	fmt.Println("env var for api key: ", os.Getenv("FH_API_KEY"))
+
 	// Create a new engine for HTML templates
 	engine := html.NewFileSystem(http.Dir("./views"), ".html")
 
