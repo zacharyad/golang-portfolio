@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
   roomNameFilterBtns.forEach((elem) => {
     elem.addEventListener('click', () => {
       searchInput.value = elem.innerText;
+      clearFilterBtnSelected();
+      elem.classList.add('selected');
       performSearch();
     });
   });
@@ -82,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
 
         card.addEventListener('click', function (e) {
-          if (!e.target.classList.contains('confirm-button')) {
+          if (!e.target.classList.contains('reduced-opacity')) {
             const expandedSection = this.querySelector('.card-expanded');
             const isExpanding = expandedSection.classList.contains('hidden');
 
@@ -103,6 +105,8 @@ document.addEventListener('DOMContentLoaded', function () {
                   }
                 });
             }
+          } else {
+            console.log('doesnt have opacity');
           }
         });
 
@@ -147,6 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
       noResults.classList.add('hidden');
       searchingAnimation.classList.add('hidden');
       toggleClearButton();
+      clearSearch();
       return;
     }
 
@@ -167,12 +172,19 @@ document.addEventListener('DOMContentLoaded', function () {
     displayBookings(filteredBookings);
   }
 
+  function clearFilterBtnSelected() {
+    roomNameFilterBtns.forEach((filterBtn) => {
+      filterBtn.classList.remove('selected');
+    });
+  }
+
   function clearSearch() {
     searchInput.value = '';
     results.innerHTML = '';
     noResults.classList.add('hidden');
     searchingAnimation.classList.add('hidden');
     toggleClearButton();
+    clearFilterBtnSelected();
   }
 
   function toggleClearButton() {
