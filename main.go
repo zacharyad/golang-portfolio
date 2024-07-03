@@ -1,13 +1,17 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/template/html/v2"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html/v2"
+	"github.com/joho/godotenv"
 )
 
 type Booking struct {
@@ -305,14 +309,11 @@ var dummyBookings = []Booking{
 }
 
 func main() {
+	app_INIT()
 
-	err := godotenv.Load()
+	APPKEY := GetEnvVal("APPKEY")
 
-	if err != nil {
-		log.Fatal("Error loading .env file:", err)
-	}
-
-	fmt.Println("env var for api key: ", os.Getenv("FH_API_KEY"))
+	fmt.Println(APPKEY)
 
 	// Create a new engine for HTML templates
 	engine := html.NewFileSystem(http.Dir("./views"), ".html")
@@ -329,6 +330,7 @@ func main() {
 
 	// API route for fetching bookings
 	app.Get("/api/bookings", handleBookings)
+	//app.Get("/api/rooms", handleItems)
 
 	// Serve static files for CSS and JavaScript
 	app.Static("/static", "./static")
@@ -337,122 +339,156 @@ func main() {
 	log.Fatal(app.Listen(":3000"))
 }
 
+func app_INIT() {
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatal("Error loading .env file:", err)
+		return
+	}
+}
+
+func GetEnvVal(envkey string) string {
+	BASE_API_ENV := os.Getenv("BASE_API_ENV")
+	return os.Getenv(BASE_API_ENV + envkey)
+}
+
 func handleBookings(c *fiber.Ctx) error {
+	allItem, err := GetAllItems()
+
+	if err != nil {
+		fmt.Println("issue getting all items")
+		return err
+	}
+
+	var allItemsAvails []string
+
+	for _, item := range allItem {
+		itemsAvails, err := getAllAvailabilitiesForToday(strconv.Itoa(item.Pk))
+		if err != nil {
+			fmt.Println("issue getting all avails for: ", item.Name)
+			return err
+		}
+
+		allItemsAvails = append(allItemsAvails, itemsAvails...)
+	}
+
+	fmt.Println("all item's Avails: ", allItemsAvails)
+
 	return c.JSON(dummyBookings)
 }
 
-// package main
+func todaysDate() string {
+	now := time.Now()
+	year := strconv.Itoa(now.Year())
+	month := strconv.Itoa(int(now.Month()))
+	day := strconv.Itoa(now.Day())
 
-// import (
-// 	"encoding/json"
-// 	"fmt"
-// 	"log"
-// 	"net/http"
+	if len(day) == 1 {
+		day = "0" + day
+	}
 
-// 	"github.com/go-resty/resty/v2"
-// 	"github.com/gofiber/fiber/v2"
-// 	"github.com/gofiber/template/html/v2"
-// )
+	if len(month) == 1 {
+		month = "0" + month
+	}
 
-// type Booking struct {
-// 	Name      string `json:"name"`
-// 	Email     string `json:"email"`
-// 	Phone     string `json:"phone"`
-// 	UUID      string `json:"uuid"`
-// 	StartTime string `json:"start_time"`
-// 	RoomName  string `json:"room_name"`
-// 	GroupSize byte   `json:"group_size"`
-// }
+	return year + "-" + month + "-" + day
+}
 
-// var Bookings []Booking
+func getAllAvailabilitiesForToday(itemPk string) ([]string, error) {
+	url := "https://fareharbor.com/api/external/v1/companies/" + GetEnvVal("SHORTNAME") + "/items/" + itemPk + "/availabilities/date/" + todaysDate() + "/"
+	APPKEY_VAL := os.Getenv("FH_API_" + "APPKEY")
+	USERKEY_VAL := os.Getenv("FH_API_" + "USERKEY")
 
-// func main() {
-// 	// Create a new engine for HTML templates
-// 	engine := html.NewFileSystem(http.Dir("./views"), ".html")
+	fmt.Println("URL", url)
 
-// 	// Create a new Fiber instance
-// 	app := fiber.New(fiber.Config{
-// 		Views: engine,
-// 	})
+	agent := fiber.AcquireAgent()
+	defer fiber.ReleaseAgent(agent)
 
-// 	// Route for the root path
-// 	app.Get("/", func(c *fiber.Ctx) error {
-// 		return c.Render("index", fiber.Map{})
-// 	})
+	req := agent.Request()
+	req.Header.Add("X-FareHarbor-API-User", USERKEY_VAL)
+	req.Header.Add("X-FareHarbor-API-App", APPKEY_VAL)
+	req.SetRequestURI(url)
 
-// 	// API route for AJAX searches
-// 	app.Get("/api/bookings", handleBookings)
+	if err := agent.Parse(); err != nil {
+		return nil, err
+	}
 
-// 	// Serve static files for CSS and JavaScript
-// 	app.Static("/static", "./static")
+	code, body, errs := agent.Bytes()
+	if len(errs) > 0 {
+		return nil, fmt.Errorf("%v %v", errs, code)
+	}
 
-// 	// Start the server
-// 	log.Fatal(app.Listen(":3000"))
-// }
-// func handleBookings(c *fiber.Ctx) error {
-// 	// This is a mock function. Replace it with actual API call and data processing
-// 	bookings := fetchBookings()
-// 	return c.JSON(bookings)
-// }
+	var response struct {
+		Avails AllAvails `json:"availabilities"`
+	}
 
-// func fetchBookings() []Booking {
-// 	baseAPIURL := "https://fareharbor.com/api/external/v1/companies/lockedmanhattan"
-// 	client := resty.New()
-// 	availabilityPk := []string{"1234", "4321", "1423"}
-// 	var bookings []Booking
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, err
+	}
 
-// 	for _, availPK := range availabilityPk {
-// 		apiAllBookingsReqString := fmt.Sprintf("%s/availabilies/%s/bookings", baseAPIURL, availPK)
-// 		// call out to fh api
-// 		resp, err := client.R().Get(apiAllBookingsReqString)
-// 		if err != nil {
-// 			log.Printf("Error calling out to get all bookings for pk: %v \n ", availPK)
-// 			return nil
-// 		}
+	fmt.Println("response from all avails api req ", response, code)
 
-// 		err = json.Unmarshal(resp.Body(), &bookings)
-// 		if err != nil {
-// 			log.Fatalf("Failed to parse API response: %v", err)
-// 		}
+	var allAvails []string
 
-// 		// add to bookings slice
-// 		bookings = append(bookings, Booking{})
-// 	}
+	for _, v := range response.Avails {
+		allAvails = append(allAvails, strconv.Itoa(v.Pk))
 
-// 	for _, booking := range bookings {
-// 		apiDetailedBookingReqString := fmt.Sprintf("%s/bookings/%s/", baseAPIURL, booking.UUID)
-// 		// call out to fh api
-// 		resp, err := client.R().Get(apiDetailedBookingReqString)
+	}
+	return allAvails, nil
+}
 
-// 		if err != nil {
-// 			return nil
-// 		}
+func GetAllItems() (AllItems, error) {
+	url := "https://fareharbor.com/api/external/v1/companies/" + GetEnvVal("SHORTNAME") + "/items/"
+	APPKEY_VAL := os.Getenv("FH_API_" + "APPKEY")
+	USERKEY_VAL := os.Getenv("FH_API_" + "USERKEY")
 
-// 		fmt.Println(resp.Body())
+	agent := fiber.AcquireAgent()
+	defer fiber.ReleaseAgent(agent)
 
-// 		detailedBooking := Booking{}
+	req := agent.Request()
+	req.Header.Add("X-FareHarbor-API-User", USERKEY_VAL)
+	req.Header.Add("X-FareHarbor-API-App", APPKEY_VAL)
+	req.SetRequestURI(url)
 
-// 		err = json.Unmarshal(resp.Body(), &detailedBooking)
-// 		if err != nil {
-// 			log.Fatalf("Failed to parse API response: %v", err)
-// 		}
+	if err := agent.Parse(); err != nil {
+		return nil, err
+	}
 
-// 		// add completed bookings to the bookings slice
-// 		bookings = append(bookings, detailedBooking)
-// 	}
+	code, body, errs := agent.Bytes()
+	if len(errs) > 0 {
+		return nil, fmt.Errorf("%v %v", errs, code)
+	}
 
-// 	processedBookings := make([]Booking, len(bookings))
-// 	for i, booking := range bookings {
-// 		processedBookings[i] = Booking{
-// 			Name:      booking.Name,
-// 			Email:     booking.Email,
-// 			Phone:     booking.Phone,
-// 			UUID:      booking.UUID,
-// 			StartTime: booking.StartTime,
-// 			RoomName:  booking.RoomName,
-// 			GroupSize: booking.GroupSize,
-// 		}
-// 	}
+	var response struct {
+		Items AllItems `json:"items"`
+	}
 
-// 	return processedBookings
-// }
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, err
+	}
+
+	var allItems AllItems
+
+	for _, v := range response.Items {
+		if v.Name == "Gift Card" || v.Name == "Locked Shirts" || v.Name == "Gift Certificate" {
+			break
+		}
+
+		allItems = append(allItems, v)
+	}
+
+	return allItems, nil
+}
+
+type Item struct {
+	Pk   int    `json:"pk"`
+	Name string `json:"name"`
+}
+type AllItems []Item
+
+type Avail struct {
+	Pk int `json:"pk"`
+}
+
+type AllAvails []Avail
