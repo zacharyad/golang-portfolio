@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
     fetch('/api/bookings')
       .then((response) => response.json())
       .then((data) => {
-        bookings = data;
+        bookings = data.bookings;
         loadingAnimation.classList.add('hidden');
         performSearch();
       })

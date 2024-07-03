@@ -3,15 +3,16 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html/v2"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
+	"sync"
 	"time"
-
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/template/html/v2"
-	"github.com/joho/godotenv"
 )
 
 type Booking struct {
@@ -23,328 +24,59 @@ type Booking struct {
 	GroupSize byte   `json:"group_size"`
 }
 
+type Item struct {
+	Pk   int    `json:"pk"`
+	Name string `json:"name"`
+}
+
+type AllItems []Item
+
+type Avail struct {
+	Pk int `json:"pk"`
+}
+
+type AllAvails []Avail
+
 var dummyBookings = []Booking{
 	{
-		Name:  "John Doe",
-		Email: "johnD@example.com",
-
+		Name:      "John Doe",
+		Email:     "johnD@example.com",
 		UUID:      "b1f5e-d3c2a-98765",
 		StartTime: "2024-07-15T14:00:00Z",
 		RoomName:  "Enter Sequence",
 		GroupSize: 5,
-	},
-	{
-		Name:  "Jane Smith",
-		Email: "jane.smith@example.com",
-
-		UUID:      "a2b3c-e4f5d-12345",
-		StartTime: "2024-07-16T10:30:00Z",
-		RoomName:  "The Witching Hour",
-		GroupSize: 3,
-	},
-	{
-		Name:  "Bob Johnson",
-		Email: "bob.johnson@example.com",
-
-		UUID:      "c6d7e-f8g9h-56789",
-		StartTime: "2024-07-17T09:00:00Z",
-		RoomName:  "The Dinner Party",
-		GroupSize: 8,
-	},
-	{
-		Name:      "Alice Brown",
-		Email:     "alice.brown@example.com",
-		UUID:      "i9j8k-l7m6n-24680",
-		StartTime: "2024-07-18T13:45:00Z",
-		RoomName:  "Kingdom Quest",
-		GroupSize: 4,
-	},
-	{
-		Name:  "Charlie Wilson",
-		Email: "charlie.wilson@example.com",
-
-		UUID:      "o5p4q-r3s2t-13579",
-		StartTime: "2024-07-19T11:15:00Z",
-		RoomName:  "Enter Sequence",
-		GroupSize: 2,
-	},
-	{
-		Name:  "Billy Griller",
-		Email: "Bill.grill@example.com",
-
-		UUID:      "o5p4q-r3s2t-13579",
-		StartTime: "2024-07-19T11:15:00Z",
-		RoomName:  "Enter Sequence",
-		GroupSize: 8,
-	},
-	{
-		Name:  "John Doe",
-		Email: "johnD@example.com",
-
-		UUID:      "b1f5e-d3c2a-98765",
-		StartTime: "2024-07-15T14:00:00Z",
-		RoomName:  "Enter Sequence",
-		GroupSize: 5,
-	},
-	{
-		Name:  "Jane Smith",
-		Email: "jane.smith@example.com",
-
-		UUID:      "a2b3c-e4f5d-12345",
-		StartTime: "2024-07-16T10:30:00Z",
-		RoomName:  "The Witching Hour",
-		GroupSize: 3,
-	},
-	{
-		Name:  "Bob Johnson",
-		Email: "bob.johnson@example.com",
-
-		UUID:      "c6d7e-f8g9h-56789",
-		StartTime: "2024-07-17T09:00:00Z",
-		RoomName:  "The Dinner Party",
-		GroupSize: 8,
-	},
-	{
-		Name:      "Alice Brown",
-		Email:     "alice.brown@example.com",
-		UUID:      "i9j8k-l7m6n-24680",
-		StartTime: "2024-07-18T13:45:00Z",
-		RoomName:  "Kingdom Quest",
-		GroupSize: 4,
-	},
-	{
-		Name:  "Charlie Wilson",
-		Email: "charlie.wilson@example.com",
-
-		UUID:      "o5p4q-r3s2t-13579",
-		StartTime: "2024-07-19T11:15:00Z",
-		RoomName:  "Enter Sequence",
-		GroupSize: 2,
-	},
-	{
-		Name:  "Billy Griller",
-		Email: "Bill.grill@example.com",
-
-		UUID:      "o5p4q-r3s2t-13579",
-		StartTime: "2024-07-19T11:15:00Z",
-		RoomName:  "Enter Sequence",
-		GroupSize: 8,
-	},
-	{
-		Name:  "John Doe",
-		Email: "johnD@example.com",
-
-		UUID:      "b1f5e-d3c2a-98765",
-		StartTime: "2024-07-15T14:00:00Z",
-		RoomName:  "Enter Sequence",
-		GroupSize: 5,
-	},
-	{
-		Name:  "Jane Smith",
-		Email: "jane.smith@example.com",
-
-		UUID:      "a2b3c-e4f5d-12345",
-		StartTime: "2024-07-16T10:30:00Z",
-		RoomName:  "The Witching Hour",
-		GroupSize: 3,
-	},
-	{
-		Name:  "Bob Johnson",
-		Email: "bob.johnson@example.com",
-
-		UUID:      "c6d7e-f8g9h-56789",
-		StartTime: "2024-07-17T09:00:00Z",
-		RoomName:  "The Dinner Party",
-		GroupSize: 8,
-	},
-	{
-		Name:      "Alice Brown",
-		Email:     "alice.brown@example.com",
-		UUID:      "i9j8k-l7m6n-24680",
-		StartTime: "2024-07-18T13:45:00Z",
-		RoomName:  "Kingdom Quest",
-		GroupSize: 4,
-	},
-	{
-		Name:  "Charlie Wilson",
-		Email: "charlie.wilson@example.com",
-
-		UUID:      "o5p4q-r3s2t-13579",
-		StartTime: "2024-07-19T11:15:00Z",
-		RoomName:  "Enter Sequence",
-		GroupSize: 2,
-	},
-	{
-		Name:  "Billy Griller",
-		Email: "Bill.grill@example.com",
-
-		UUID:      "o5p4q-r3s2t-13579",
-		StartTime: "2024-07-19T11:15:00Z",
-		RoomName:  "Enter Sequence",
-		GroupSize: 8,
-	},
-	{
-		Name:  "John Doe",
-		Email: "johnD@example.com",
-
-		UUID:      "b1f5e-d3c2a-98765",
-		StartTime: "2024-07-15T14:00:00Z",
-		RoomName:  "Enter Sequence",
-		GroupSize: 5,
-	},
-	{
-		Name:  "Jane Smith",
-		Email: "jane.smith@example.com",
-
-		UUID:      "a2b3c-e4f5d-12345",
-		StartTime: "2024-07-16T10:30:00Z",
-		RoomName:  "The Witching Hour",
-		GroupSize: 3,
-	},
-	{
-		Name:  "Bob Johnson",
-		Email: "bob.johnson@example.com",
-
-		UUID:      "c6d7e-f8g9h-56789",
-		StartTime: "2024-07-17T09:00:00Z",
-		RoomName:  "The Dinner Party",
-		GroupSize: 8,
-	},
-	{
-		Name:      "Alice Brown",
-		Email:     "alice.brown@example.com",
-		UUID:      "i9j8k-l7m6n-24680",
-		StartTime: "2024-07-18T13:45:00Z",
-		RoomName:  "Kingdom Quest",
-		GroupSize: 4,
-	},
-	{
-		Name:  "Charlie Wilson",
-		Email: "charlie.wilson@example.com",
-
-		UUID:      "o5p4q-r3s2t-13579",
-		StartTime: "2024-07-19T11:15:00Z",
-		RoomName:  "Enter Sequence",
-		GroupSize: 2,
-	},
-	{
-		Name:  "Billy Griller",
-		Email: "Bill.grill@example.com",
-
-		UUID:      "o5p4q-r3s2t-13579",
-		StartTime: "2024-07-19T11:15:00Z",
-		RoomName:  "Enter Sequence",
-		GroupSize: 8,
-	},
-	{
-		Name:  "John Doe",
-		Email: "johnD@example.com",
-
-		UUID:      "b1f5e-d3c2a-98765",
-		StartTime: "2024-07-15T14:00:00Z",
-		RoomName:  "Enter Sequence",
-		GroupSize: 5,
-	},
-	{
-		Name:  "Jane Smith",
-		Email: "jane.smith@example.com",
-
-		UUID:      "a2b3c-e4f5d-12345",
-		StartTime: "2024-07-16T10:30:00Z",
-		RoomName:  "The Witching Hour",
-		GroupSize: 3,
-	},
-	{
-		Name:  "Bob Johnson",
-		Email: "bob.johnson@example.com",
-
-		UUID:      "c6d7e-f8g9h-56789",
-		StartTime: "2024-07-17T09:00:00Z",
-		RoomName:  "The Dinner Party",
-		GroupSize: 8,
-	},
-	{
-		Name:      "Alice Brown",
-		Email:     "alice.brown@example.com",
-		UUID:      "i9j8k-l7m6n-24680",
-		StartTime: "2024-07-18T13:45:00Z",
-		RoomName:  "Kingdom Quest",
-		GroupSize: 4,
-	},
-	{
-		Name:  "John Doe",
-		Email: "johnD@example.com",
-
-		UUID:      "b1f5e-d3c2a-98765",
-		StartTime: "2024-07-15T14:00:00Z",
-		RoomName:  "Pet Project",
-		GroupSize: 5,
-	},
-	{
-		Name:  "Jane Smith",
-		Email: "jane.smith@example.com",
-
-		UUID:      "a2b3c-e4f5d-12345",
-		StartTime: "2024-07-16T10:30:00Z",
-		RoomName:  "The Witching Hour",
-		GroupSize: 3,
-	},
-	{
-		Name:  "Bob Johnson",
-		Email: "bob.johnson@example.com",
-
-		UUID:      "c6d7e-f8g9h-56789",
-		StartTime: "2024-07-17T09:00:00Z",
-		RoomName:  "The Dinner Party",
-		GroupSize: 8,
-	},
-	{
-		Name:      "Alice Brown",
-		Email:     "alice.brown@example.com",
-		UUID:      "i9j8k-l7m6n-24680",
-		StartTime: "2024-07-18T13:45:00Z",
-		RoomName:  "Kingdom Quest",
-		GroupSize: 4,
 	},
 }
+
+var cached_items AllItems
+var today int
 
 func main() {
 	app_INIT()
 
 	APPKEY := GetEnvVal("APPKEY")
-
 	fmt.Println(APPKEY)
 
-	// Create a new engine for HTML templates
 	engine := html.NewFileSystem(http.Dir("./views"), ".html")
 
-	// Create a new Fiber instance
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
 
-	// Route for the root path
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Render("index", fiber.Map{})
 	})
 
-	// API route for fetching bookings
 	app.Get("/api/bookings", handleBookings)
-	//app.Get("/api/rooms", handleItems)
-
-	// Serve static files for CSS and JavaScript
 	app.Static("/static", "./static")
 
-	// Start the server
 	log.Fatal(app.Listen(":3000"))
 }
 
 func app_INIT() {
 	err := godotenv.Load()
-
 	if err != nil {
 		log.Fatal("Error loading .env file:", err)
-		return
 	}
 }
 
@@ -354,94 +86,135 @@ func GetEnvVal(envkey string) string {
 }
 
 func handleBookings(c *fiber.Ctx) error {
-	allItem, err := GetAllItems()
 
+	var err error
+
+	if len(cached_items) == 0 || today != time.Now().Day() {
+		today = time.Now().Day()
+		cached_items, err = GetAllItems()
+		if err != nil {
+			fmt.Println("issue getting all items")
+			return err
+		}
+	}
+
+	allItemsAvails, err := getAllAvailabilitiesConcurrently(cached_items)
 	if err != nil {
-		fmt.Println("issue getting all items")
+		fmt.Println("issue getting all availabilities")
 		return err
 	}
 
-	var allItemsAvails []string
-
-	for _, item := range allItem {
-		itemsAvails, err := getAllAvailabilitiesForToday(strconv.Itoa(item.Pk))
-		if err != nil {
-			fmt.Println("issue getting all avails for: ", item.Name)
-			return err
-		}
-
-		allItemsAvails = append(allItemsAvails, itemsAvails...)
-	}
-
-	fmt.Println("all item's Avails: ", allItemsAvails)
-
-	return c.JSON(dummyBookings)
+	return c.JSON(fiber.Map{
+		"bookings":       dummyBookings,
+		"availabilities": allItemsAvails,
+	})
 }
 
-func todaysDate() string {
-	now := time.Now()
-	year := strconv.Itoa(now.Year())
-	month := strconv.Itoa(int(now.Month()))
-	day := strconv.Itoa(now.Day())
+func getAllAvailabilitiesConcurrently(items AllItems) (map[string][]string, error) {
+	log.Println("Starting getAllAvailabilitiesConcurrently")
 
-	if len(day) == 1 {
-		day = "0" + day
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	allItemsAvails := make(map[string][]string)
+	errors := make(chan error, len(items))
+
+	for _, item := range items {
+		wg.Add(1)
+		go func(item Item) {
+			defer wg.Done()
+			log.Printf("Starting goroutine for item: %s (PK: %d)", item.Name, item.Pk)
+
+			itemAvails, err := getAllAvailabilitiesForToday(strconv.Itoa(item.Pk))
+			if err != nil {
+				log.Printf("Error getting avails for item %s (PK: %d): %v", item.Name, item.Pk, err)
+				errors <- fmt.Errorf("error getting avails for item %s (PK: %d): %v", item.Name, item.Pk, err)
+				return
+			}
+
+			mu.Lock()
+			allItemsAvails[item.Name] = itemAvails
+
+			mu.Unlock()
+			log.Printf("Completed processing for item: %s (PK: %d)", item.Name, item.Pk)
+		}(item)
 	}
 
-	if len(month) == 1 {
-		month = "0" + month
+	wg.Wait()
+	close(errors)
+
+	var errStrings []string
+	for err := range errors {
+		errStrings = append(errStrings, err.Error())
 	}
 
-	return year + "-" + month + "-" + day
+	if len(errStrings) > 0 {
+		return allItemsAvails, fmt.Errorf("errors occurred: %s", strings.Join(errStrings, "; "))
+	}
+
+	log.Println("Successfully completed getAllAvailabilitiesConcurrently")
+	return allItemsAvails, nil
 }
-
 func getAllAvailabilitiesForToday(itemPk string) ([]string, error) {
-	url := "https://fareharbor.com/api/external/v1/companies/" + GetEnvVal("SHORTNAME") + "/items/" + itemPk + "/availabilities/date/" + todaysDate() + "/"
-	APPKEY_VAL := os.Getenv("FH_API_" + "APPKEY")
-	USERKEY_VAL := os.Getenv("FH_API_" + "USERKEY")
+	log.Printf("Starting getAllAvailabilitiesForToday for item PK: %s", itemPk)
 
-	fmt.Println("URL", url)
+	url := fmt.Sprintf("https://fareharbor.com/api/external/v1/companies/%s/items/%s/availabilities/date/%s/",
+		GetEnvVal("SHORTNAME"), itemPk, todaysDate())
 
-	agent := fiber.AcquireAgent()
-	defer fiber.ReleaseAgent(agent)
+	APPKEY_VAL := os.Getenv("FH_API_APPKEY")
+	USERKEY_VAL := os.Getenv("FH_API_USERKEY")
 
-	req := agent.Request()
+	if APPKEY_VAL == "" || USERKEY_VAL == "" {
+		return nil, fmt.Errorf("API keys not set properly")
+	}
+
+	log.Printf("Preparing to make request to URL: %s", url)
+
+	client := &http.Client{
+		Timeout: time.Second * 10,
+	}
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %v", err)
+	}
+
 	req.Header.Add("X-FareHarbor-API-User", USERKEY_VAL)
 	req.Header.Add("X-FareHarbor-API-App", APPKEY_VAL)
-	req.SetRequestURI(url)
 
-	if err := agent.Parse(); err != nil {
-		return nil, err
+	log.Printf("Sending request for item PK: %s", itemPk)
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send request: %v", err)
 	}
+	defer resp.Body.Close()
 
-	code, body, errs := agent.Bytes()
-	if len(errs) > 0 {
-		return nil, fmt.Errorf("%v %v", errs, code)
+	log.Printf("Received response with status code: %d", resp.StatusCode)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
 	var response struct {
 		Avails AllAvails `json:"availabilities"`
 	}
 
-	if err := json.Unmarshal(body, &response); err != nil {
-		return nil, err
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %v", err)
 	}
-
-	fmt.Println("response from all avails api req ", response, code)
 
 	var allAvails []string
-
 	for _, v := range response.Avails {
 		allAvails = append(allAvails, strconv.Itoa(v.Pk))
-
 	}
+
+	log.Printf("Successfully processed availabilities for item PK: %s", itemPk)
 	return allAvails, nil
 }
 
 func GetAllItems() (AllItems, error) {
 	url := "https://fareharbor.com/api/external/v1/companies/" + GetEnvVal("SHORTNAME") + "/items/"
-	APPKEY_VAL := os.Getenv("FH_API_" + "APPKEY")
-	USERKEY_VAL := os.Getenv("FH_API_" + "USERKEY")
+	APPKEY_VAL := os.Getenv("FH_API_APPKEY")
+	USERKEY_VAL := os.Getenv("FH_API_USERKEY")
 
 	agent := fiber.AcquireAgent()
 	defer fiber.ReleaseAgent(agent)
@@ -469,26 +242,29 @@ func GetAllItems() (AllItems, error) {
 	}
 
 	var allItems AllItems
-
 	for _, v := range response.Items {
 		if v.Name == "Gift Card" || v.Name == "Locked Shirts" || v.Name == "Gift Certificate" {
-			break
+			continue
 		}
-
 		allItems = append(allItems, v)
 	}
 
 	return allItems, nil
 }
 
-type Item struct {
-	Pk   int    `json:"pk"`
-	Name string `json:"name"`
-}
-type AllItems []Item
+func todaysDate() string {
+	now := time.Now()
+	year := strconv.Itoa(now.Year())
+	month := strconv.Itoa(int(now.Month()))
+	day := strconv.Itoa(now.Day())
 
-type Avail struct {
-	Pk int `json:"pk"`
-}
+	if len(day) == 1 {
+		day = "0" + day
+	}
 
-type AllAvails []Avail
+	if len(month) == 1 {
+		month = "0" + month
+	}
+
+	return year + "-" + month + "-" + day
+}
