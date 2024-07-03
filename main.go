@@ -73,6 +73,235 @@ var dummyBookings = []Booking{
 		RoomName:  "Enter Sequence",
 		GroupSize: 8,
 	},
+	{
+		Name:  "John Doe",
+		Email: "johnD@example.com",
+
+		UUID:      "b1f5e-d3c2a-98765",
+		StartTime: "2024-07-15T14:00:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 5,
+	},
+	{
+		Name:  "Jane Smith",
+		Email: "jane.smith@example.com",
+
+		UUID:      "a2b3c-e4f5d-12345",
+		StartTime: "2024-07-16T10:30:00Z",
+		RoomName:  "The Witching Hour",
+		GroupSize: 3,
+	},
+	{
+		Name:  "Bob Johnson",
+		Email: "bob.johnson@example.com",
+
+		UUID:      "c6d7e-f8g9h-56789",
+		StartTime: "2024-07-17T09:00:00Z",
+		RoomName:  "The Dinner Party",
+		GroupSize: 8,
+	},
+	{
+		Name:      "Alice Brown",
+		Email:     "alice.brown@example.com",
+		UUID:      "i9j8k-l7m6n-24680",
+		StartTime: "2024-07-18T13:45:00Z",
+		RoomName:  "Kingdom Quest",
+		GroupSize: 4,
+	},
+	{
+		Name:  "Charlie Wilson",
+		Email: "charlie.wilson@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 2,
+	},
+	{
+		Name:  "Billy Griller",
+		Email: "Bill.grill@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 8,
+	},
+	{
+		Name:  "John Doe",
+		Email: "johnD@example.com",
+
+		UUID:      "b1f5e-d3c2a-98765",
+		StartTime: "2024-07-15T14:00:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 5,
+	},
+	{
+		Name:  "Jane Smith",
+		Email: "jane.smith@example.com",
+
+		UUID:      "a2b3c-e4f5d-12345",
+		StartTime: "2024-07-16T10:30:00Z",
+		RoomName:  "The Witching Hour",
+		GroupSize: 3,
+	},
+	{
+		Name:  "Bob Johnson",
+		Email: "bob.johnson@example.com",
+
+		UUID:      "c6d7e-f8g9h-56789",
+		StartTime: "2024-07-17T09:00:00Z",
+		RoomName:  "The Dinner Party",
+		GroupSize: 8,
+	},
+	{
+		Name:      "Alice Brown",
+		Email:     "alice.brown@example.com",
+		UUID:      "i9j8k-l7m6n-24680",
+		StartTime: "2024-07-18T13:45:00Z",
+		RoomName:  "Kingdom Quest",
+		GroupSize: 4,
+	},
+	{
+		Name:  "Charlie Wilson",
+		Email: "charlie.wilson@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 2,
+	},
+	{
+		Name:  "Billy Griller",
+		Email: "Bill.grill@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 8,
+	},
+	{
+		Name:  "John Doe",
+		Email: "johnD@example.com",
+
+		UUID:      "b1f5e-d3c2a-98765",
+		StartTime: "2024-07-15T14:00:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 5,
+	},
+	{
+		Name:  "Jane Smith",
+		Email: "jane.smith@example.com",
+
+		UUID:      "a2b3c-e4f5d-12345",
+		StartTime: "2024-07-16T10:30:00Z",
+		RoomName:  "The Witching Hour",
+		GroupSize: 3,
+	},
+	{
+		Name:  "Bob Johnson",
+		Email: "bob.johnson@example.com",
+
+		UUID:      "c6d7e-f8g9h-56789",
+		StartTime: "2024-07-17T09:00:00Z",
+		RoomName:  "The Dinner Party",
+		GroupSize: 8,
+	},
+	{
+		Name:      "Alice Brown",
+		Email:     "alice.brown@example.com",
+		UUID:      "i9j8k-l7m6n-24680",
+		StartTime: "2024-07-18T13:45:00Z",
+		RoomName:  "Kingdom Quest",
+		GroupSize: 4,
+	},
+	{
+		Name:  "Charlie Wilson",
+		Email: "charlie.wilson@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 2,
+	},
+	{
+		Name:  "Billy Griller",
+		Email: "Bill.grill@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 8,
+	},
+	{
+		Name:  "John Doe",
+		Email: "johnD@example.com",
+
+		UUID:      "b1f5e-d3c2a-98765",
+		StartTime: "2024-07-15T14:00:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 5,
+	},
+	{
+		Name:  "Jane Smith",
+		Email: "jane.smith@example.com",
+
+		UUID:      "a2b3c-e4f5d-12345",
+		StartTime: "2024-07-16T10:30:00Z",
+		RoomName:  "The Witching Hour",
+		GroupSize: 3,
+	},
+	{
+		Name:  "Bob Johnson",
+		Email: "bob.johnson@example.com",
+
+		UUID:      "c6d7e-f8g9h-56789",
+		StartTime: "2024-07-17T09:00:00Z",
+		RoomName:  "The Dinner Party",
+		GroupSize: 8,
+	},
+	{
+		Name:      "Alice Brown",
+		Email:     "alice.brown@example.com",
+		UUID:      "i9j8k-l7m6n-24680",
+		StartTime: "2024-07-18T13:45:00Z",
+		RoomName:  "Kingdom Quest",
+		GroupSize: 4,
+	},
+	{
+		Name:  "John Doe",
+		Email: "johnD@example.com",
+
+		UUID:      "b1f5e-d3c2a-98765",
+		StartTime: "2024-07-15T14:00:00Z",
+		RoomName:  "Pet Project",
+		GroupSize: 5,
+	},
+	{
+		Name:  "Jane Smith",
+		Email: "jane.smith@example.com",
+
+		UUID:      "a2b3c-e4f5d-12345",
+		StartTime: "2024-07-16T10:30:00Z",
+		RoomName:  "The Witching Hour",
+		GroupSize: 3,
+	},
+	{
+		Name:  "Bob Johnson",
+		Email: "bob.johnson@example.com",
+
+		UUID:      "c6d7e-f8g9h-56789",
+		StartTime: "2024-07-17T09:00:00Z",
+		RoomName:  "The Dinner Party",
+		GroupSize: 8,
+	},
+	{
+		Name:      "Alice Brown",
+		Email:     "alice.brown@example.com",
+		UUID:      "i9j8k-l7m6n-24680",
+		StartTime: "2024-07-18T13:45:00Z",
+		RoomName:  "Kingdom Quest",
+		GroupSize: 4,
+	},
 }
 
 func main() {

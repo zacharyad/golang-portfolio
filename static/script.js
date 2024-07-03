@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const searchingAnimation = document.getElementById('searching-animation');
   const searchingText = document.getElementById('search-msg');
   const roomNameFilterBtns = document.querySelectorAll('.room-filter');
+  let scrollEvent;
 
   roomNameFilterBtns.forEach((elem) => {
     elem.addEventListener('click', () => {
@@ -74,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <h3>${idx + 1}: ${
           booking.room_name
         }: ${formattedTruncBookingName}</h3>
-            <p>Start Time: <strong><u>${formattedDateOfBooking}</u></strong></p>
+            <p>Start Time: <strong>${formattedDateOfBooking}</strong></p>
 
             </div>
             <div class="card-expanded ${displayOne ? 'hidden' : ''}">
@@ -108,8 +109,6 @@ document.addEventListener('DOMContentLoaded', function () {
                   }
                 });
             }
-          } else {
-            console.log('doesnt have opacity');
           }
         });
 
@@ -188,6 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
     searchingAnimation.classList.add('hidden');
     toggleClearButton();
     clearFilterBtnSelected();
+    searchInput.focus = true;
   }
 
   function toggleClearButton() {
@@ -198,6 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   searchInput.addEventListener('input', performSearch);
+
   clearSearchButton.addEventListener('click', clearSearch);
 
   window.addEventListener('popstate', function (event) {
