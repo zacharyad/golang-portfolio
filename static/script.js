@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const searchingAnimation = document.getElementById('searching-animation');
   const searchingText = document.getElementById('search-msg');
   const roomNameFilterBtns = document.querySelectorAll('.room-filter');
-  let scrollEvent;
+  const loadingAnimation = document.getElementById('loading-animation');
 
   roomNameFilterBtns.forEach((elem) => {
     elem.addEventListener('click', () => {
@@ -23,12 +23,14 @@ document.addEventListener('DOMContentLoaded', function () {
     fetch('/api/bookings')
       .then((response) => response.json())
       .then((data) => {
-        bookings = data;
+        bookings = data.bookings;
+        loadingAnimation.classList.add('hidden');
         performSearch();
       })
       .catch((error) => {
         console.error('Error fetching bookings:', error);
-      });
+      })
+      .finally(() => {});
   }
 
   function formattedEmail(email) {
