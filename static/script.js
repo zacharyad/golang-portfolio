@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const searchingText = document.getElementById('search-msg');
   const roomNameFilterBtns = document.querySelectorAll('.room-filter');
   const loadingAnimation = document.getElementById('loading-animation');
+  const roomFilterContainer = document.querySelector('.room-filter-container');
 
   roomNameFilterBtns.forEach((elem) => {
     elem.addEventListener('click', () => {
@@ -24,13 +25,19 @@ document.addEventListener('DOMContentLoaded', function () {
       .then((response) => response.json())
       .then((data) => {
         bookings = data.bookings;
-        loadingAnimation.classList.add('hidden');
         performSearch();
       })
       .catch((error) => {
         console.error('Error fetching bookings:', error);
       })
-      .finally(() => {});
+      .finally(() => {
+        loadingAnimation.classList.add('hidden');
+
+        document.querySelectorAll('.room-filter').forEach((btn) => {
+          btn.disabled = false;
+          btn.classList.remove('disabled');
+        });
+      });
   }
 
   function formattedEmail(email) {

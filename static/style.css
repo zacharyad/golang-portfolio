@@ -236,6 +236,13 @@ p {
   display: none;
 }
 
+.disabled {
+  opacity: .3;
+  cursor: not-allowed;
+}
+
+
+
 .selected {
   background-color: var(--primary-color);
   color: var(--text-selected);

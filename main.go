@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -23,7 +24,17 @@ type Booking struct {
 	UUID      string `json:"uuid"`
 	StartTime string `json:"start_time"`
 	RoomName  string `json:"room_name"`
-	GroupSize byte   `json:"group_size"`
+}
+
+type APIResponse struct {
+	Bookings []struct {
+		Contact struct {
+			Name  string `json:"name"`
+			Email string `json:"email"`
+		} `json:"contact"`
+		UUID      string `json:"uuid"`
+		CreatedAt string `json:"created_at"`
+	} `json:"bookings"`
 }
 
 type Item struct {
@@ -47,7 +58,6 @@ var dummyBookings = []Booking{
 		UUID:      "b1f5e-d3c2a-98765",
 		StartTime: "2024-07-15T14:00:00Z",
 		RoomName:  "Enter Sequence",
-		GroupSize: 5,
 	},
 	{
 		Name:  "Jane Smith",
@@ -56,7 +66,6 @@ var dummyBookings = []Booking{
 		UUID:      "a2b3c-e4f5d-12345",
 		StartTime: "2024-07-16T10:30:00Z",
 		RoomName:  "The Witching Hour",
-		GroupSize: 3,
 	},
 	{
 		Name:  "Bob Johnson",
@@ -65,7 +74,6 @@ var dummyBookings = []Booking{
 		UUID:      "c6d7e-f8g9h-56789",
 		StartTime: "2024-07-17T09:00:00Z",
 		RoomName:  "The Dinner Party",
-		GroupSize: 8,
 	},
 	{
 		Name:      "Alice Brown",
@@ -73,7 +81,6 @@ var dummyBookings = []Booking{
 		UUID:      "i9j8k-l7m6n-24680",
 		StartTime: "2024-07-18T13:45:00Z",
 		RoomName:  "Kingdom Quest",
-		GroupSize: 4,
 	},
 	{
 		Name:  "Charlie Wilson",
@@ -82,7 +89,6 @@ var dummyBookings = []Booking{
 		UUID:      "o5p4q-r3s2t-13579",
 		StartTime: "2024-07-19T11:15:00Z",
 		RoomName:  "Enter Sequence",
-		GroupSize: 2,
 	},
 	{
 		Name:  "Billy Griller",
@@ -91,7 +97,6 @@ var dummyBookings = []Booking{
 		UUID:      "o5p4q-r3s2t-13579",
 		StartTime: "2024-07-19T11:15:00Z",
 		RoomName:  "Enter Sequence",
-		GroupSize: 8,
 	},
 	{
 		Name:  "John Doe",
@@ -100,7 +105,6 @@ var dummyBookings = []Booking{
 		UUID:      "b1f5e-d3c2a-98765",
 		StartTime: "2024-07-15T14:00:00Z",
 		RoomName:  "Enter Sequence",
-		GroupSize: 5,
 	},
 	{
 		Name:  "Jane Smith",
@@ -109,7 +113,6 @@ var dummyBookings = []Booking{
 		UUID:      "a2b3c-e4f5d-12345",
 		StartTime: "2024-07-16T10:30:00Z",
 		RoomName:  "The Witching Hour",
-		GroupSize: 3,
 	},
 	{
 		Name:  "Bob Johnson",
@@ -118,7 +121,6 @@ var dummyBookings = []Booking{
 		UUID:      "c6d7e-f8g9h-56789",
 		StartTime: "2024-07-17T09:00:00Z",
 		RoomName:  "The Dinner Party",
-		GroupSize: 8,
 	},
 	{
 		Name:      "Alice Brown",
@@ -126,7 +128,6 @@ var dummyBookings = []Booking{
 		UUID:      "i9j8k-l7m6n-24680",
 		StartTime: "2024-07-18T13:45:00Z",
 		RoomName:  "Kingdom Quest",
-		GroupSize: 4,
 	},
 	{
 		Name:  "Charlie Wilson",
@@ -135,7 +136,6 @@ var dummyBookings = []Booking{
 		UUID:      "o5p4q-r3s2t-13579",
 		StartTime: "2024-07-19T11:15:00Z",
 		RoomName:  "Enter Sequence",
-		GroupSize: 2,
 	},
 	{
 		Name:  "Billy Griller",
@@ -144,7 +144,6 @@ var dummyBookings = []Booking{
 		UUID:      "o5p4q-r3s2t-13579",
 		StartTime: "2024-07-19T11:15:00Z",
 		RoomName:  "Enter Sequence",
-		GroupSize: 8,
 	},
 	{
 		Name:  "John Doe",
@@ -153,7 +152,6 @@ var dummyBookings = []Booking{
 		UUID:      "b1f5e-d3c2a-98765",
 		StartTime: "2024-07-15T14:00:00Z",
 		RoomName:  "Enter Sequence",
-		GroupSize: 5,
 	},
 	{
 		Name:  "Jane Smith",
@@ -162,7 +160,6 @@ var dummyBookings = []Booking{
 		UUID:      "a2b3c-e4f5d-12345",
 		StartTime: "2024-07-16T10:30:00Z",
 		RoomName:  "The Witching Hour",
-		GroupSize: 3,
 	},
 	{
 		Name:  "Bob Johnson",
@@ -171,7 +168,6 @@ var dummyBookings = []Booking{
 		UUID:      "c6d7e-f8g9h-56789",
 		StartTime: "2024-07-17T09:00:00Z",
 		RoomName:  "The Dinner Party",
-		GroupSize: 8,
 	},
 	{
 		Name:      "Alice Brown",
@@ -179,7 +175,6 @@ var dummyBookings = []Booking{
 		UUID:      "i9j8k-l7m6n-24680",
 		StartTime: "2024-07-18T13:45:00Z",
 		RoomName:  "Kingdom Quest",
-		GroupSize: 4,
 	},
 	{
 		Name:  "Charlie Wilson",
@@ -188,7 +183,6 @@ var dummyBookings = []Booking{
 		UUID:      "o5p4q-r3s2t-13579",
 		StartTime: "2024-07-19T11:15:00Z",
 		RoomName:  "Enter Sequence",
-		GroupSize: 2,
 	},
 	{
 		Name:  "Billy Griller",
@@ -197,7 +191,6 @@ var dummyBookings = []Booking{
 		UUID:      "o5p4q-r3s2t-13579",
 		StartTime: "2024-07-19T11:15:00Z",
 		RoomName:  "Enter Sequence",
-		GroupSize: 8,
 	},
 	{
 		Name:  "John Doe",
@@ -206,7 +199,6 @@ var dummyBookings = []Booking{
 		UUID:      "b1f5e-d3c2a-98765",
 		StartTime: "2024-07-15T14:00:00Z",
 		RoomName:  "Enter Sequence",
-		GroupSize: 5,
 	},
 	{
 		Name:  "Jane Smith",
@@ -215,7 +207,6 @@ var dummyBookings = []Booking{
 		UUID:      "a2b3c-e4f5d-12345",
 		StartTime: "2024-07-16T10:30:00Z",
 		RoomName:  "The Witching Hour",
-		GroupSize: 3,
 	},
 	{
 		Name:  "Bob Johnson",
@@ -224,7 +215,6 @@ var dummyBookings = []Booking{
 		UUID:      "c6d7e-f8g9h-56789",
 		StartTime: "2024-07-17T09:00:00Z",
 		RoomName:  "The Dinner Party",
-		GroupSize: 8,
 	},
 	{
 		Name:      "Alice Brown",
@@ -232,7 +222,6 @@ var dummyBookings = []Booking{
 		UUID:      "i9j8k-l7m6n-24680",
 		StartTime: "2024-07-18T13:45:00Z",
 		RoomName:  "Kingdom Quest",
-		GroupSize: 4,
 	},
 	{
 		Name:  "Charlie Wilson",
@@ -241,7 +230,6 @@ var dummyBookings = []Booking{
 		UUID:      "o5p4q-r3s2t-13579",
 		StartTime: "2024-07-19T11:15:00Z",
 		RoomName:  "Enter Sequence",
-		GroupSize: 2,
 	},
 	{
 		Name:  "Billy Griller",
@@ -250,7 +238,6 @@ var dummyBookings = []Booking{
 		UUID:      "o5p4q-r3s2t-13579",
 		StartTime: "2024-07-19T11:15:00Z",
 		RoomName:  "Enter Sequence",
-		GroupSize: 8,
 	},
 	{
 		Name:  "John Doe",
@@ -259,7 +246,6 @@ var dummyBookings = []Booking{
 		UUID:      "b1f5e-d3c2a-98765",
 		StartTime: "2024-07-15T14:00:00Z",
 		RoomName:  "Enter Sequence",
-		GroupSize: 5,
 	},
 	{
 		Name:  "Jane Smith",
@@ -268,7 +254,6 @@ var dummyBookings = []Booking{
 		UUID:      "a2b3c-e4f5d-12345",
 		StartTime: "2024-07-16T10:30:00Z",
 		RoomName:  "The Witching Hour",
-		GroupSize: 3,
 	},
 	{
 		Name:  "Bob Johnson",
@@ -277,7 +262,6 @@ var dummyBookings = []Booking{
 		UUID:      "c6d7e-f8g9h-56789",
 		StartTime: "2024-07-17T09:00:00Z",
 		RoomName:  "The Dinner Party",
-		GroupSize: 8,
 	},
 	{
 		Name:      "Alice Brown",
@@ -285,7 +269,6 @@ var dummyBookings = []Booking{
 		UUID:      "i9j8k-l7m6n-24680",
 		StartTime: "2024-07-18T13:45:00Z",
 		RoomName:  "Kingdom Quest",
-		GroupSize: 4,
 	},
 	{
 		Name:  "John Doe",
@@ -294,7 +277,6 @@ var dummyBookings = []Booking{
 		UUID:      "b1f5e-d3c2a-98765",
 		StartTime: "2024-07-15T14:00:00Z",
 		RoomName:  "Pet Project",
-		GroupSize: 5,
 	},
 	{
 		Name:  "Jane Smith",
@@ -303,7 +285,6 @@ var dummyBookings = []Booking{
 		UUID:      "a2b3c-e4f5d-12345",
 		StartTime: "2024-07-16T10:30:00Z",
 		RoomName:  "The Witching Hour",
-		GroupSize: 3,
 	},
 	{
 		Name:  "Bob Johnson",
@@ -312,7 +293,6 @@ var dummyBookings = []Booking{
 		UUID:      "c6d7e-f8g9h-56789",
 		StartTime: "2024-07-17T09:00:00Z",
 		RoomName:  "The Dinner Party",
-		GroupSize: 8,
 	},
 	{
 		Name:      "Alice Brown",
@@ -320,7 +300,6 @@ var dummyBookings = []Booking{
 		UUID:      "i9j8k-l7m6n-24680",
 		StartTime: "2024-07-18T13:45:00Z",
 		RoomName:  "Kingdom Quest",
-		GroupSize: 4,
 	},
 }
 
@@ -379,6 +358,8 @@ func handleBookings(c *fiber.Ctx) error {
 		return err
 	}
 
+	// now use GetConcurrentBookings(context.Background(), allItemsAvails) to get all the bookings based on availability PKs
+	// add to the return of thie request
 	return c.JSON(fiber.Map{
 		"bookings":       dummyBookings,
 		"availabilities": allItemsAvails,
@@ -387,8 +368,11 @@ func handleBookings(c *fiber.Ctx) error {
 
 func getAllAvailabilitiesConcurrently(items AllItems) (map[string][]string, error) {
 	log.Println("Starting getAllAvailabilitiesConcurrently")
-	var wg sync.WaitGroup
-	var mu sync.Mutex
+	var (
+		wg sync.WaitGroup
+		mu sync.Mutex
+	)
+
 	allItemsAvails := make(map[string][]string)
 	errors := make(chan error, len(items))
 
@@ -533,6 +517,110 @@ func GetAllItems() (AllItems, error) {
 	}
 
 	return allItems, nil
+}
+
+func GetConcurrentBookings(ctx context.Context, availabilities map[string][]string) ([]Booking, error) {
+	var (
+		bookings    []Booking
+		errorList   []error
+		mu          sync.Mutex
+		wg          sync.WaitGroup
+		rateLimiter = time.NewTicker(time.Second / 30)
+		errorChan   = make(chan error, len(availabilities))
+	)
+
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	APPKEY_VAL := os.Getenv("FH_API_APPKEY")
+	USERKEY_VAL := os.Getenv("FH_API_USERKEY")
+
+	for roomName, availabilityPKs := range availabilities {
+		for _, pk := range availabilityPKs {
+			wg.Add(1)
+			go func(room, availabilityPK string) {
+				defer wg.Done()
+
+				select {
+				case <-rateLimiter.C:
+				case <-ctx.Done():
+					errorChan <- ctx.Err()
+					return
+				}
+
+				url := fmt.Sprintf("https://fareharbor.com/api/external/v1/companies/%s/availabilities/%s/bookings/", GetEnvVal("SHORTNAME"), availabilityPK)
+
+				req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+				if err != nil {
+					errorChan <- fmt.Errorf("failed to create request for %s: %v", availabilityPK, err)
+					return
+				}
+
+				req.Header.Add("X-FareHarbor-API-User", USERKEY_VAL)
+				req.Header.Add("X-FareHarbor-API-App", APPKEY_VAL)
+
+				resp, err := client.Do(req)
+				if err != nil {
+					errorChan <- fmt.Errorf("failed to send request for %s: %v", availabilityPK, err)
+					return
+				}
+				defer resp.Body.Close()
+
+				if resp.StatusCode != http.StatusOK {
+					errorChan <- fmt.Errorf("unexpected status code for %s: %d", availabilityPK, resp.StatusCode)
+					return
+				}
+
+				body, err := io.ReadAll(resp.Body)
+				if err != nil {
+					errorChan <- fmt.Errorf("failed to read response body for %s: %v", availabilityPK, err)
+					return
+				}
+
+				var apiResp APIResponse
+				if err := json.Unmarshal(body, &apiResp); err != nil {
+					errorChan <- fmt.Errorf("failed to unmarshal response for %s: %v", availabilityPK, err)
+					return
+				}
+
+				mu.Lock()
+				for _, b := range apiResp.Bookings {
+					bookings = append(bookings, Booking{
+						Name:      b.Contact.Name,
+						Email:     b.Contact.Email,
+						UUID:      b.UUID,
+						StartTime: b.CreatedAt, // Using CreatedAt as StartTime for now
+						RoomName:  room,
+					})
+				}
+				mu.Unlock()
+
+				log.Printf("Successfully processed bookings for %s, %s", room, availabilityPK)
+			}(roomName, pk)
+		}
+	}
+
+	go func() {
+		wg.Wait()
+		close(errorChan)
+	}()
+
+	for err := range errorChan {
+		errorList = append(errorList, err)
+	}
+
+	rateLimiter.Stop()
+
+	var finalError error
+	if len(errorList) > 0 {
+		finalError = fmt.Errorf("encountered %d errors while fetching bookings", len(errorList))
+		for _, err := range errorList {
+			log.Printf("Error: %v", err)
+		}
+	}
+
+	return bookings, finalError
 }
 
 func todaysDate() string {
