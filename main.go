@@ -3,9 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/template/html/v2"
-	"github.com/joho/godotenv"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -13,6 +11,10 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html/v2"
+	"github.com/joho/godotenv"
 )
 
 type Booking struct {
@@ -39,12 +41,286 @@ type AllAvails []Avail
 
 var dummyBookings = []Booking{
 	{
-		Name:      "John Doe",
-		Email:     "johnD@example.com",
+		Name:  "John Doe",
+		Email: "johnD@example.com",
+
 		UUID:      "b1f5e-d3c2a-98765",
 		StartTime: "2024-07-15T14:00:00Z",
 		RoomName:  "Enter Sequence",
 		GroupSize: 5,
+	},
+	{
+		Name:  "Jane Smith",
+		Email: "jane.smith@example.com",
+
+		UUID:      "a2b3c-e4f5d-12345",
+		StartTime: "2024-07-16T10:30:00Z",
+		RoomName:  "The Witching Hour",
+		GroupSize: 3,
+	},
+	{
+		Name:  "Bob Johnson",
+		Email: "bob.johnson@example.com",
+
+		UUID:      "c6d7e-f8g9h-56789",
+		StartTime: "2024-07-17T09:00:00Z",
+		RoomName:  "The Dinner Party",
+		GroupSize: 8,
+	},
+	{
+		Name:      "Alice Brown",
+		Email:     "alice.brown@example.com",
+		UUID:      "i9j8k-l7m6n-24680",
+		StartTime: "2024-07-18T13:45:00Z",
+		RoomName:  "Kingdom Quest",
+		GroupSize: 4,
+	},
+	{
+		Name:  "Charlie Wilson",
+		Email: "charlie.wilson@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 2,
+	},
+	{
+		Name:  "Billy Griller",
+		Email: "Bill.grill@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 8,
+	},
+	{
+		Name:  "John Doe",
+		Email: "johnD@example.com",
+
+		UUID:      "b1f5e-d3c2a-98765",
+		StartTime: "2024-07-15T14:00:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 5,
+	},
+	{
+		Name:  "Jane Smith",
+		Email: "jane.smith@example.com",
+
+		UUID:      "a2b3c-e4f5d-12345",
+		StartTime: "2024-07-16T10:30:00Z",
+		RoomName:  "The Witching Hour",
+		GroupSize: 3,
+	},
+	{
+		Name:  "Bob Johnson",
+		Email: "bob.johnson@example.com",
+
+		UUID:      "c6d7e-f8g9h-56789",
+		StartTime: "2024-07-17T09:00:00Z",
+		RoomName:  "The Dinner Party",
+		GroupSize: 8,
+	},
+	{
+		Name:      "Alice Brown",
+		Email:     "alice.brown@example.com",
+		UUID:      "i9j8k-l7m6n-24680",
+		StartTime: "2024-07-18T13:45:00Z",
+		RoomName:  "Kingdom Quest",
+		GroupSize: 4,
+	},
+	{
+		Name:  "Charlie Wilson",
+		Email: "charlie.wilson@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 2,
+	},
+	{
+		Name:  "Billy Griller",
+		Email: "Bill.grill@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 8,
+	},
+	{
+		Name:  "John Doe",
+		Email: "johnD@example.com",
+
+		UUID:      "b1f5e-d3c2a-98765",
+		StartTime: "2024-07-15T14:00:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 5,
+	},
+	{
+		Name:  "Jane Smith",
+		Email: "jane.smith@example.com",
+
+		UUID:      "a2b3c-e4f5d-12345",
+		StartTime: "2024-07-16T10:30:00Z",
+		RoomName:  "The Witching Hour",
+		GroupSize: 3,
+	},
+	{
+		Name:  "Bob Johnson",
+		Email: "bob.johnson@example.com",
+
+		UUID:      "c6d7e-f8g9h-56789",
+		StartTime: "2024-07-17T09:00:00Z",
+		RoomName:  "The Dinner Party",
+		GroupSize: 8,
+	},
+	{
+		Name:      "Alice Brown",
+		Email:     "alice.brown@example.com",
+		UUID:      "i9j8k-l7m6n-24680",
+		StartTime: "2024-07-18T13:45:00Z",
+		RoomName:  "Kingdom Quest",
+		GroupSize: 4,
+	},
+	{
+		Name:  "Charlie Wilson",
+		Email: "charlie.wilson@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 2,
+	},
+	{
+		Name:  "Billy Griller",
+		Email: "Bill.grill@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 8,
+	},
+	{
+		Name:  "John Doe",
+		Email: "johnD@example.com",
+
+		UUID:      "b1f5e-d3c2a-98765",
+		StartTime: "2024-07-15T14:00:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 5,
+	},
+	{
+		Name:  "Jane Smith",
+		Email: "jane.smith@example.com",
+
+		UUID:      "a2b3c-e4f5d-12345",
+		StartTime: "2024-07-16T10:30:00Z",
+		RoomName:  "The Witching Hour",
+		GroupSize: 3,
+	},
+	{
+		Name:  "Bob Johnson",
+		Email: "bob.johnson@example.com",
+
+		UUID:      "c6d7e-f8g9h-56789",
+		StartTime: "2024-07-17T09:00:00Z",
+		RoomName:  "The Dinner Party",
+		GroupSize: 8,
+	},
+	{
+		Name:      "Alice Brown",
+		Email:     "alice.brown@example.com",
+		UUID:      "i9j8k-l7m6n-24680",
+		StartTime: "2024-07-18T13:45:00Z",
+		RoomName:  "Kingdom Quest",
+		GroupSize: 4,
+	},
+	{
+		Name:  "Charlie Wilson",
+		Email: "charlie.wilson@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 2,
+	},
+	{
+		Name:  "Billy Griller",
+		Email: "Bill.grill@example.com",
+
+		UUID:      "o5p4q-r3s2t-13579",
+		StartTime: "2024-07-19T11:15:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 8,
+	},
+	{
+		Name:  "John Doe",
+		Email: "johnD@example.com",
+
+		UUID:      "b1f5e-d3c2a-98765",
+		StartTime: "2024-07-15T14:00:00Z",
+		RoomName:  "Enter Sequence",
+		GroupSize: 5,
+	},
+	{
+		Name:  "Jane Smith",
+		Email: "jane.smith@example.com",
+
+		UUID:      "a2b3c-e4f5d-12345",
+		StartTime: "2024-07-16T10:30:00Z",
+		RoomName:  "The Witching Hour",
+		GroupSize: 3,
+	},
+	{
+		Name:  "Bob Johnson",
+		Email: "bob.johnson@example.com",
+
+		UUID:      "c6d7e-f8g9h-56789",
+		StartTime: "2024-07-17T09:00:00Z",
+		RoomName:  "The Dinner Party",
+		GroupSize: 8,
+	},
+	{
+		Name:      "Alice Brown",
+		Email:     "alice.brown@example.com",
+		UUID:      "i9j8k-l7m6n-24680",
+		StartTime: "2024-07-18T13:45:00Z",
+		RoomName:  "Kingdom Quest",
+		GroupSize: 4,
+	},
+	{
+		Name:  "John Doe",
+		Email: "johnD@example.com",
+
+		UUID:      "b1f5e-d3c2a-98765",
+		StartTime: "2024-07-15T14:00:00Z",
+		RoomName:  "Pet Project",
+		GroupSize: 5,
+	},
+	{
+		Name:  "Jane Smith",
+		Email: "jane.smith@example.com",
+
+		UUID:      "a2b3c-e4f5d-12345",
+		StartTime: "2024-07-16T10:30:00Z",
+		RoomName:  "The Witching Hour",
+		GroupSize: 3,
+	},
+	{
+		Name:  "Bob Johnson",
+		Email: "bob.johnson@example.com",
+
+		UUID:      "c6d7e-f8g9h-56789",
+		StartTime: "2024-07-17T09:00:00Z",
+		RoomName:  "The Dinner Party",
+		GroupSize: 8,
+	},
+	{
+		Name:      "Alice Brown",
+		Email:     "alice.brown@example.com",
+		UUID:      "i9j8k-l7m6n-24680",
+		StartTime: "2024-07-18T13:45:00Z",
+		RoomName:  "Kingdom Quest",
+		GroupSize: 4,
 	},
 }
 
@@ -70,7 +346,7 @@ func main() {
 	app.Get("/api/bookings", handleBookings)
 	app.Static("/static", "./static")
 
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(":8080"))
 }
 
 func app_INIT() {
@@ -86,21 +362,20 @@ func GetEnvVal(envkey string) string {
 }
 
 func handleBookings(c *fiber.Ctx) error {
-
 	var err error
 
 	if len(cached_items) == 0 || today != time.Now().Day() {
 		today = time.Now().Day()
 		cached_items, err = GetAllItems()
 		if err != nil {
-			fmt.Println("issue getting all items")
+			log.Println("issue getting all items")
 			return err
 		}
 	}
 
 	allItemsAvails, err := getAllAvailabilitiesConcurrently(cached_items)
 	if err != nil {
-		fmt.Println("issue getting all availabilities")
+		log.Println("issue getting all availabilities")
 		return err
 	}
 
@@ -112,7 +387,6 @@ func handleBookings(c *fiber.Ctx) error {
 
 func getAllAvailabilitiesConcurrently(items AllItems) (map[string][]string, error) {
 	log.Println("Starting getAllAvailabilitiesConcurrently")
-
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	allItemsAvails := make(map[string][]string)
@@ -159,7 +433,6 @@ func getAllAvailabilitiesForToday(itemPk string) ([]string, error) {
 
 	url := fmt.Sprintf("https://fareharbor.com/api/external/v1/companies/%s/items/%s/availabilities/date/%s/",
 		GetEnvVal("SHORTNAME"), itemPk, todaysDate())
-
 	APPKEY_VAL := os.Getenv("FH_API_APPKEY")
 	USERKEY_VAL := os.Getenv("FH_API_USERKEY")
 
@@ -216,21 +489,31 @@ func GetAllItems() (AllItems, error) {
 	APPKEY_VAL := os.Getenv("FH_API_APPKEY")
 	USERKEY_VAL := os.Getenv("FH_API_USERKEY")
 
-	agent := fiber.AcquireAgent()
-	defer fiber.ReleaseAgent(agent)
-
-	req := agent.Request()
-	req.Header.Add("X-FareHarbor-API-User", USERKEY_VAL)
-	req.Header.Add("X-FareHarbor-API-App", APPKEY_VAL)
-	req.SetRequestURI(url)
-
-	if err := agent.Parse(); err != nil {
-		return nil, err
+	client := &http.Client{
+		Timeout: time.Second * 10,
 	}
 
-	code, body, errs := agent.Bytes()
-	if len(errs) > 0 {
-		return nil, fmt.Errorf("%v %v", errs, code)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %v", err)
+	}
+
+	req.Header.Add("X-FareHarbor-API-User", USERKEY_VAL)
+	req.Header.Add("X-FareHarbor-API-App", APPKEY_VAL)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %v", err)
 	}
 
 	var response struct {
@@ -238,7 +521,7 @@ func GetAllItems() (AllItems, error) {
 	}
 
 	if err := json.Unmarshal(body, &response); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to unmarshal response: %v", err)
 	}
 
 	var allItems AllItems
