@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const searchingText = document.getElementById('search-msg');
   const roomNameFilterBtns = document.querySelectorAll('.room-filter');
   const loadingAnimation = document.getElementById('loading-animation');
+  const roomFilterContainer = document.querySelector('.room-filter-container');
 
   roomNameFilterBtns.forEach((elem) => {
     elem.addEventListener('click', () => {
@@ -14,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function () {
       clearFilterBtnSelected();
       elem.classList.add('selected');
       performSearch();
+      if (results.hasChildNodes) {
+        scrollToElementTop(results);
+      }
     });
   });
 
@@ -23,14 +27,21 @@ document.addEventListener('DOMContentLoaded', function () {
     fetch('/api/bookings')
       .then((response) => response.json())
       .then((data) => {
-        bookings = data.bookings;
-        loadingAnimation.classList.add('hidden');
+        console.log(data);
+        bookings = data.availabilities;
         performSearch();
       })
       .catch((error) => {
         console.error('Error fetching bookings:', error);
       })
-      .finally(() => {});
+      .finally(() => {
+        loadingAnimation.classList.add('hidden');
+
+        document.querySelectorAll('.room-filter').forEach((btn) => {
+          btn.disabled = false;
+          btn.classList.remove('disabled');
+        });
+      });
   }
 
   function formattedEmail(email) {
@@ -51,7 +62,14 @@ document.addEventListener('DOMContentLoaded', function () {
   function formattedBookingName(bookingName) {
     let [fName, lName] = bookingName.split(' ');
 
-    return `${fName} ${lName.slice(0, 1)}.`;
+    if (lName === undefined) lName = '';
+    else lName = lName.slice(0, 1);
+
+    return `${fName} ${lName}.`;
+  }
+
+  function displayItemBtns(bookings) {
+    bookings.forEach(room);
   }
 
   function displayBookings(bookingsToDisplay, displayOne = false) {
@@ -82,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <div class="card-expanded ${displayOne ? 'hidden' : ''}">
             <p><strong>Booking's Email: </strong>${truncEmail}</p>
-            <p>Group Size: ${booking.group_size}</p>
             <hr>
             <p id="confirm-text">Is this the correct booking?</p>
             <button class="confirm-button">Sign Waiver(s)</button>
@@ -112,22 +129,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
           }
+
+          scrollToElementTop(card);
         });
 
         card
           .querySelector('.confirm-button')
           .addEventListener('click', function (e) {
             e.stopPropagation();
-            const companyName = 'lockedmanhattan';
-            const uuid = card.getAttribute('data-uuid');
-            const url = `https://fareharbor.com/waivers?shortname=${companyName}&bookingUuid=${uuid}/`;
-            window.location.href = url;
+            alert('Blocked for privacy along with bogus uuid');
+            // const companyName = 'lockedmanhattan';
+            // const uuid = card.getAttribute('data-uuid');
+            // const url = `https://fareharbor.com/waivers?shortname=${companyName}&bookingUuid=${uuid}/`;
+            // window.location.href = url;
           });
 
         results.appendChild(card);
       });
     }
     toggleClearButton();
+  }
+
+  function scrollToElementTop(elem) {
+    let yPosition = elem.getBoundingClientRect().top + window.scrollY;
+    window.scroll({
+      top: yPosition,
+      behavior: 'smooth',
+    });
   }
 
   function isSearchTermValid(term, value) {
