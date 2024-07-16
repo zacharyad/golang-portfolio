@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function () {
       clearFilterBtnSelected();
       elem.classList.add('selected');
       performSearch();
+      if (results.hasChildNodes) {
+        scrollToElementTop(results);
+      }
     });
   });
 
@@ -59,6 +62,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let [fName, lName] = bookingName.split(' ');
 
     return `${fName} ${lName.slice(0, 1)}.`;
+  }
+
+  function displayItemBtns(bookings) {
+    bookings.forEach(room);
   }
 
   function displayBookings(bookingsToDisplay, displayOne = false) {
@@ -119,6 +126,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
           }
+
+          scrollToElementTop(card);
         });
 
         card
@@ -135,6 +144,14 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
     toggleClearButton();
+  }
+
+  function scrollToElementTop(elem) {
+    let yPosition = elem.getBoundingClientRect().top + window.scrollY;
+    window.scroll({
+      top: yPosition,
+      behavior: 'smooth',
+    });
   }
 
   function isSearchTermValid(term, value) {
