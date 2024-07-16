@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
     fetch('/api/bookings')
       .then((response) => response.json())
       .then((data) => {
-        bookings = data.bookings;
+        console.log(data);
+        bookings = data.availabilities;
         performSearch();
       })
       .catch((error) => {
@@ -61,7 +62,10 @@ document.addEventListener('DOMContentLoaded', function () {
   function formattedBookingName(bookingName) {
     let [fName, lName] = bookingName.split(' ');
 
-    return `${fName} ${lName.slice(0, 1)}.`;
+    if (lName === undefined) lName = '';
+    else lName = lName.slice(0, 1);
+
+    return `${fName} ${lName}.`;
   }
 
   function displayItemBtns(bookings) {
@@ -96,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <div class="card-expanded ${displayOne ? 'hidden' : ''}">
             <p><strong>Booking's Email: </strong>${truncEmail}</p>
-            <p>Group Size: ${booking.group_size}</p>
             <hr>
             <p id="confirm-text">Is this the correct booking?</p>
             <button class="confirm-button">Sign Waiver(s)</button>
@@ -134,10 +137,11 @@ document.addEventListener('DOMContentLoaded', function () {
           .querySelector('.confirm-button')
           .addEventListener('click', function (e) {
             e.stopPropagation();
-            const companyName = 'lockedmanhattan';
-            const uuid = card.getAttribute('data-uuid');
-            const url = `https://fareharbor.com/waivers?shortname=${companyName}&bookingUuid=${uuid}/`;
-            window.location.href = url;
+            alert('Blocked for privacy along with bogus uuid');
+            // const companyName = 'lockedmanhattan';
+            // const uuid = card.getAttribute('data-uuid');
+            // const url = `https://fareharbor.com/waivers?shortname=${companyName}&bookingUuid=${uuid}/`;
+            // window.location.href = url;
           });
 
         results.appendChild(card);
