@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	mail "github.com/go-mail/mail"
 	"github.com/gofiber/fiber/v2"
@@ -70,11 +71,7 @@ func sendMail(eAddr, name, msg string) error {
 }
 
 func app_INIT() {
-	err := godotenv.Load()
-	fmt.Println("env loaded....")
-	if err != nil {
-		log.Fatal("Error loading .env file:", err)
-	}
+
 }
 
 func GetFHEnvVal(envkey string) string {
