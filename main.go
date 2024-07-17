@@ -5,12 +5,10 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	mail "github.com/go-mail/mail"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
-	"github.com/joho/godotenv"
 )
 
 type Msg struct {
