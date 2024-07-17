@@ -54,7 +54,6 @@ func sendMail(eAddr, name, msg string) error {
 	m := mail.NewMessage()
 	emailENV := os.Getenv("EMAIL")
 
-	m.SetHeader("From", eAddr)
 	m.SetHeader("To", eAddr)
 	m.SetHeader("Subject", "Portfolio Contact Form Message from, "+eAddr)
 	m.SetBody("text/html", msg+" | "+name)
