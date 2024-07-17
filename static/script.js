@@ -1,248 +1,124 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const searchInput = document.getElementById('search');
-  const clearSearchButton = document.getElementById('clear-search');
-  const results = document.getElementById('results');
-  const noResults = document.getElementById('no-results');
-  const searchingAnimation = document.getElementById('searching-animation');
-  const searchingText = document.getElementById('search-msg');
-  const roomNameFilterBtns = document.querySelectorAll('.room-filter');
-  const loadingAnimation = document.getElementById('loading-animation');
-  const roomFilterContainer = document.querySelector('.room-filter-container');
+gsap.registerPlugin(ScrollTrigger);
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('contact-form');
+  const contactTitle = document.getElementById('contact-title');
+  const contactBtn = document.getElementById('contact-btn');
+  const header = document.querySelector('header');
+  const hero = document.querySelector('.hero');
 
-  roomNameFilterBtns.forEach((elem) => {
-    elem.addEventListener('click', () => {
-      searchInput.value = elem.innerText;
-      clearFilterBtnSelected();
-      elem.classList.add('selected');
-      performSearch();
-      if (results.hasChildNodes) {
-        scrollToElementTop(results);
+  const parallaxElements = document.querySelectorAll('.parallax-element');
+
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute('href')).scrollIntoView({
+        behavior: 'smooth',
+      });
+    });
+  });
+
+  gsap.utils.toArray('section').forEach((section) => {
+    if (section.id === 'contact') {
+      gsap.from(section, {
+        opacity: 0,
+        y: 50,
+        duration: 1,
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 80%',
+          end: 'top 70%',
+          scrub: 1,
+        },
+      });
+      return;
+    }
+    gsap.from(section, {
+      opacity: 0,
+      y: 50,
+      duration: 1,
+      scrollTrigger: {
+        trigger: section,
+        start: 'top 80%',
+        end: 'top 50%',
+        scrub: 1,
+      },
+    });
+  });
+
+  gsap.utils.toArray('.project-card').forEach((card) => {
+    gsap.from(card, {
+      opacity: 0,
+      y: 30,
+      duration: 0.5,
+      scrollTrigger: {
+        trigger: card,
+        start: 'top 90%',
+        end: 'top 60%',
+        scrub: 1,
+      },
+    });
+  });
+
+  async function post(path, data, method = 'post') {
+    let { name, email, message } = data;
+    try {
+      const res = await fetch(path, {
+        method: method,
+        body: JSON.stringify({ name, email, message }),
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+    } catch (err) {
+      console.log(err.message);
+    }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+
+    post('/emailmsg/', data);
+
+    form.reset();
+
+    contactTitle.innerText = 'Thank you for contacting me!';
+    contactBtn.innerText = 'Send Another Message';
+  });
+
+  const heroObserver = new IntersectionObserver(
+    ([entry]) => {
+      if (!entry.isIntersecting) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
       }
+    },
+    { threshold: 0.1 }
+  );
+
+  heroObserver.observe(hero);
+
+  hero.addEventListener('mousemove', (e) => {
+    const { clientX, clientY } = e;
+    const { offsetWidth, offsetHeight } = hero;
+
+    parallaxElements.forEach((el) => {
+      const depth = el.getAttribute('data-depth');
+      const moveX = (clientX - offsetWidth / 2) * depth;
+      const moveY = (clientY - offsetHeight / 2) * depth;
+
+      setTimeout(() => {
+        el.style.transform = `rotate(${moveX + (moveY % 30)}deg)`;
+      }, 200);
     });
   });
 
-  let bookings = [];
-
-  function fetchBookings() {
-    fetch('/api/bookings')
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        bookings = data.availabilities;
-        performSearch();
-      })
-      .catch((error) => {
-        console.error('Error fetching bookings:', error);
-      })
-      .finally(() => {
-        loadingAnimation.classList.add('hidden');
-
-        document.querySelectorAll('.room-filter').forEach((btn) => {
-          btn.disabled = false;
-          btn.classList.remove('disabled');
-        });
-      });
-  }
-
-  function formattedEmail(email) {
-    let emailArr = email.split('@');
-    let [addr, domain] = emailArr;
-    let truncChar = '.';
-    let splitIdx = Math.round(addr.length / 2);
-    let truncAddr = addr.slice(0, splitIdx);
-    let truncation = truncChar.repeat(addr.length - splitIdx);
-
-    return `${truncAddr}${truncation}@${domain}`;
-  }
-
-  function formattedDate(dateString) {
-    return new Date(dateString).toLocaleString();
-  }
-
-  function formattedBookingName(bookingName) {
-    let [fName, lName] = bookingName.split(' ');
-
-    if (lName === undefined) lName = '';
-    else lName = lName.slice(0, 1);
-
-    return `${fName} ${lName}.`;
-  }
-
-  function displayItemBtns(bookings) {
-    bookings.forEach(room);
-  }
-
-  function displayBookings(bookingsToDisplay, displayOne = false) {
-    results.innerHTML = '';
-    if (bookingsToDisplay.length === 0) {
-      noResults.classList.remove('hidden');
-      searchingAnimation.classList.remove('hidden');
-    } else {
-      noResults.classList.add('hidden');
-      searchingAnimation.classList.add('hidden');
-
-      bookingsToDisplay.forEach((booking, idx) => {
-        const card = document.createElement('div');
-        card.classList.add('booking-card');
-        card.setAttribute('data-contact', booking.name);
-        card.setAttribute('data-uuid', booking.uuid);
-
-        const truncEmail = formattedEmail(booking.email);
-        const formattedDateOfBooking = formattedDate(booking.start_time);
-        const formattedTruncBookingName = formattedBookingName(booking.name);
-        card.innerHTML = `
-          <div class="card-content">
-            <h3>${idx + 1}: ${
-          booking.room_name
-        }: ${formattedTruncBookingName}</h3>
-            <p>Start Time: <strong>${formattedDateOfBooking}</strong></p>
-
-            </div>
-            <div class="card-expanded ${displayOne ? 'hidden' : ''}">
-            <p><strong>Booking's Email: </strong>${truncEmail}</p>
-            <hr>
-            <p id="confirm-text">Is this the correct booking?</p>
-            <button class="confirm-button">Sign Waiver(s)</button>
-          </div>
-        `;
-
-        card.addEventListener('click', function (e) {
-          if (!e.target.classList.contains('reduced-opacity')) {
-            const expandedSection = this.querySelector('.card-expanded');
-            const isExpanding = expandedSection.classList.contains('hidden');
-
-            // Collapse all cards and remove reduced opacity
-            document.querySelectorAll('.booking-card').forEach((otherCard) => {
-              otherCard.querySelector('.card-expanded').classList.add('hidden');
-              otherCard.classList.remove('reduced-opacity');
-            });
-
-            if (isExpanding) {
-              // Expand this card and reduce opacity of others
-              expandedSection.classList.remove('hidden');
-              document
-                .querySelectorAll('.booking-card')
-                .forEach((otherCard) => {
-                  if (otherCard !== this) {
-                    otherCard.classList.add('reduced-opacity');
-                  }
-                });
-            }
-          }
-
-          scrollToElementTop(card);
-        });
-
-        card
-          .querySelector('.confirm-button')
-          .addEventListener('click', function (e) {
-            e.stopPropagation();
-            alert('Blocked for privacy along with bogus uuid');
-            // const companyName = 'lockedmanhattan';
-            // const uuid = card.getAttribute('data-uuid');
-            // const url = `https://fareharbor.com/waivers?shortname=${companyName}&bookingUuid=${uuid}/`;
-            // window.location.href = url;
-          });
-
-        results.appendChild(card);
-      });
-    }
-    toggleClearButton();
-  }
-
-  function scrollToElementTop(elem) {
-    let yPosition = elem.getBoundingClientRect().top + window.scrollY;
-    window.scroll({
-      top: yPosition,
-      behavior: 'smooth',
+  hero.addEventListener('mouseleave', () => {
+    parallaxElements.forEach((el) => {
+      el.style.transform = 'translate(0, 0)';
     });
-  }
-
-  function isSearchTermValid(term, value) {
-    return (
-      term.length >= Math.ceil(value.split(' ')[0].length / 3) &&
-      value.toLowerCase().includes(term)
-    );
-  }
-
-  function performSearch() {
-    const searchValue = searchInput.value.trim();
-
-    if (searchValue === '@all') {
-      displayBookings(bookings);
-      return;
-    }
-
-    const searchTerms = searchValue
-      .toLowerCase()
-      .split(' ')
-      .filter((term) => term.length > 0);
-
-    if (searchTerms.length === 0) {
-      results.innerHTML = '';
-      noResults.classList.add('hidden');
-      searchingAnimation.classList.add('hidden');
-      toggleClearButton();
-      clearSearch();
-      return;
-    }
-
-    searchingText.innerText =
-      searchValue.length > 8
-        ? 'Booking may be under a different name, email, or room name'
-        : 'Keep typing to find your booking...';
-
-    const filteredBookings = bookings.filter((booking) =>
-      searchTerms.every(
-        (term) =>
-          isSearchTermValid(term, booking.name) ||
-          isSearchTermValid(term, booking.email) ||
-          isSearchTermValid(term, booking.room_name)
-      )
-    );
-
-    displayBookings(filteredBookings, filteredBookings.length > 1);
-  }
-
-  function clearFilterBtnSelected() {
-    roomNameFilterBtns.forEach((filterBtn) => {
-      filterBtn.classList.remove('selected');
-    });
-  }
-
-  function clearSearch() {
-    searchInput.value = '';
-    results.innerHTML = '';
-    noResults.classList.add('hidden');
-    searchingAnimation.classList.add('hidden');
-    toggleClearButton();
-    clearFilterBtnSelected();
-    searchInput.focus = true;
-  }
-
-  function toggleClearButton() {
-    clearSearchButton.classList.toggle(
-      'hidden',
-      searchInput.value.length === 0 && results.children.length === 0
-    );
-  }
-
-  searchInput.addEventListener('input', performSearch);
-
-  clearSearchButton.addEventListener('click', clearSearch);
-
-  window.addEventListener('popstate', function (event) {
-    if (event.state && event.state.search !== undefined) {
-      searchInput.value = event.state.search;
-      performSearch();
-    }
   });
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const initialSearch = urlParams.get('search');
-  if (initialSearch) {
-    searchInput.value = initialSearch;
-  }
-
-  fetchBookings();
 });

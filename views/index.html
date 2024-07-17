@@ -6,59 +6,106 @@
     <title>Booking Search</title>
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/style.css">
-</head>
+    
+  </head>
 <body>
-    <div class="container">
-      <div class="hero">
-         <img  src="/static/logo.png" width="200px" alt="">
-        <h1>Waiver Search</h1>
-      </div>
-
-       <p><em>Search using name or email of the person that booked your reservation OR click the room name to help find your room</em></p>
-       <div class="room-filter-container" >
-        <div>
-          <button disabled class="room-filter disabled" data-roomName="the-witching-hour">The Witching Hour</button>
-        </div>
-        <div>
-          <button disabled class="room-filter disabled" data-roomName="the-dinner-party">The Dinner Party</button>
-        </div>
-        <div>
-          <button disabled class="room-filter disabled" data-roomName="the-order-of-the-veil">The Order of the Veil</button>
-        </div>
-        <div>
-          <button disabled class="room-filter disabled" data-roomName="enter-sequence">Enter Sequence</button>
-        </div>
-        <div>
-          <button disabled class="room-filter disabled" data-roomName="exit-strategy">Exit Strategy</button>
-        </div>
-        <div>
-          <button disabled class="room-filter disabled" data-roomName="pet-project">Pet Project</button>
-        </div>
-        <div>
-          <button disabled class="room-filter disabled" data-roomName="kingdom-quest">Kingdom Quest</button>
-        </div>
-      </div>
-       <div class="search-container"> 
-          
-            <input type="text" id="search" placeholder="'Jane Smith' or 'jane.s@email.com'">
-            <button id="clear-search" class="hidden">Clear</button>
-        </div>
-        
-        <div class="spacer"></div>
-        <div id="searching-animation" class="hidden">
-            <p id="search-msg">Keep typing to find your booking...</p>
-            <div class="spinner"></div>
-        </div>
-        <div id="loading-animation">
-          <p>LOADING...</p>
-          <div class="spinner"></div>
-      </div>
-        
-        <ul id="results">
-          
+  <header>
+    <nav>
+        <div class="logo"><a href="#">ZD</a></div>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
         </ul>
-        <div id="no-results" class="hidden">Currently no results found</div>
-    </div>
+    </nav>
+</header>
+
+<main>
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="parallax-element" data-depth="0.2"><strong>Z</strong>ach <strong>D</strong>roge</h1>
+            <h2 data-depth="0.4">Software Engineer</h2>
+            <p data-depth="0.6">Create, Solve, Iterate, Repeat</p>
+            <a href="#contact" id="contact-btn" class="cta-button" data-depth="0.8">Get in touch</a>
+        </div>
+        <div class="hero-background" data-depth="0.1"></div>
+    </section>
+
+    <section id="about" class="about">
+        <h2>About Me</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <p>I'm a passionate software engineer with expertise in full-stack development, creating user experiences, and making stuff (most importantly). With 5+ years of experience, I've delivered impactful solutions for customers.</p>
+                <ul class="skills-list">
+                    <li>JavaScript/TypeScript (React, Node, express, tRPC)</li>
+                    <li>HTML, CSS (Tailwind, ShadCn)</li>
+                    <li>Golang (Fiber, Templ)</li>
+                    <li>Selfhosting (Docker, linux, VPS)</li>
+                    <li>Embedded (C++, Arduino)</li>
+                </ul>
+            </div>
+            <div class="about-image">
+                <img src="https://www.stackimages.xyz/l/javascript-typescript-nodejs-npm-react-css-postgresql-html" alt="John Doe">
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="projects">
+        <h2>Featured Projects</h2>
+        <div class="project-grid">
+            <div class="project-card">
+                <h3>Stack Image API with landing page app</h3>
+                <p>An api written in golang that distributes images based on the tech stack you give it, and some options as to how you want it displayed. Intended use for github markdown or websites needing to display a quick list of tech stack logos. Currectly used withing this very site to display stack logos</p>
+               
+                <a href="https://www.stackimages.xyz/" target="_blank" class="project-link">View Project</a>
+            </div>
+            <div class="project-card">
+                <h3>LockedShelf Platform</h3>
+                <p>Locked shelf is an application with active users acting as a digital gateway to buy, interact, and track puzzles from a physical book.</p>
+                
+                <a href="https://www.lockedshelf.com/" class="project-link">View Project</a>
+            </div>
+            <div class="project-card">
+                <h3>Real-time Data Visualization Dashboard</h3>
+                <p>Built a responsive dashboard using React and D3.js to visualize complex datasets in real-time.</p>
+                
+                <a href="#" class="project-link">View Project</a>
+            </div>
+            <div class="project-card">
+              <h3>Github</h3>
+              <p>Check out some of my other coding projects, including some embedded projects!</p>
+              
+              <a href="https://github.com/zacharyad" class="project-link">View Project</a>
+          </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <h2 id="contact-title" >Get in Touch</h2>
+        <form id="contact-form" action="/contactmsg" method="POST">
+            <div class="input-group">
+                <input type="text" id="name" name="name" required>
+                <label for="name">Name</label>
+            </div>
+            <div class="input-group">
+                <input type="email" id="email" name="email" required>
+                <label for="email">Email</label>
+            </div>
+            <div class="input-group">
+                <textarea id="message" name="message" required></textarea>
+                <label for="message">Message</label>
+            </div>
+            <button id="contact-btn" type="submit">Send Message</button>
+        </form>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2024 Zachary Droge. All rights reserved.</p>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
     <script type="text/javascript" src="/static/script.js"></script>
 </body>
 </html>
