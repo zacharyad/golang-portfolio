@@ -55,8 +55,8 @@ func sendMail(eAddr, name, msg string) error {
 	emailENV := os.Getenv("EMAIL")
 
 	m.SetHeader("From", eAddr)
-	m.SetHeader("To", emailENV)
-	m.SetHeader("Subject", "Portfolio Contact Form Message from, "+name)
+	m.SetHeader("To", eAddr)
+	m.SetHeader("Subject", "Portfolio Contact Form Message from, "+eAddr)
 	m.SetBody("text/html", msg+" | "+name)
 
 	d := mail.NewDialer("smtp.gmail.com", 587, emailENV, os.Getenv("EMAILPASS"))
