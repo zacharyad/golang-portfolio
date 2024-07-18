@@ -5,8 +5,61 @@ document.addEventListener('DOMContentLoaded', () => {
   const contactBtn = document.getElementById('contact-btn');
   const header = document.querySelector('header');
   const hero = document.querySelector('.hero');
-
+  const scrollArrow = document.querySelector('.scroll-arrow');
   const parallaxElements = document.querySelectorAll('.parallax-element');
+
+  console.log(`
+    .=======================.
+    ||    .-"""""-.         ||
+    ||   /  ___    __\\      ||
+    ||  |\\(_-_)--(_-_)      ||
+    ||  (.       @    |      ||
+    ||   \\    ____   /       ||
+    ||    \\        /        ||
+    ||     || _'--')        ||
+    ||     |______|         ||
+    || MR. Scary Ascii Man  ||
+    ||                      ||
+    ||    +-----------+     ||
+    ||    |           |     ||
+    ||    |  HIRE ME  |     ||
+    ||    |  OR ELSE  |     ||
+    ||    +-----------+     ||
+    ||                      ||
+    ||                      ||
+    ||                      ||
+    '======================='
+`);
+
+  scrollArrow.addEventListener('click', () => {
+    const { top } = document.getElementById('spacer').getBoundingClientRect();
+    let y = top - 100;
+    window.scroll({ top: y, behavior: 'smooth' });
+  });
+
+  window.addEventListener('scroll', () => {
+    const heroBottom = hero.offsetTop + hero.offsetHeight;
+
+    if (window.scrollY > heroBottom - window.innerHeight / 2) {
+      scrollArrow.style.opacity = '0';
+      scrollArrow.style.pointerEvents = 'none';
+    } else {
+      scrollArrow.style.opacity = '0.7';
+      scrollArrow.style.pointerEvents = 'auto';
+    }
+  });
+
+  gsap.from('.about-content', {
+    opacity: 0,
+    y: 50,
+    duration: 1,
+    scrollTrigger: {
+      trigger: '.about-content',
+      start: 'top 80%',
+      end: 'bottom 20%',
+      toggleActions: 'play none none reverse',
+    },
+  });
 
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener('click', function (e) {

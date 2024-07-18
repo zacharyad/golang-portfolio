@@ -41,12 +41,6 @@ nav {
     align-items: center;
 }
 
-.logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #fff;
-}
-
 nav ul {
     display: flex;
     list-style: none;
@@ -103,6 +97,13 @@ nav ul li a:hover {
   z-index: 2;
 }
 
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+
 main {
     padding-top: 4rem;
 }
@@ -117,7 +118,7 @@ h1, h2, h3 {
 
 .hero {
   position: relative;
-  height: 90dvh;
+  height: 85dvh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -146,6 +147,25 @@ h1, h2, h3 {
 .hero p {
   font-size: 1.2rem;
   margin-bottom: 2rem;
+}
+
+.scroll-arrow {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    opacity: 0.7;
+    animation: float 2s ease-in-out infinite;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.scroll-arrow svg {
+    width: 100%;
+    height: 100%;
+    color: white;
 }
 
 .parallax-element {
@@ -181,6 +201,10 @@ h1, h2, h3 {
     display: flex;
     align-items: center;
     gap: 2rem;
+}
+
+.about {
+    margin-top: 20px;
 }
 
 .about-text {
@@ -305,12 +329,26 @@ button[type="submit"]:hover {
     background-color: #2980b9;
 }
 
-
 footer {
     background-color: var(--primary-color);
     color: #fff;
     text-align: center;
     padding: 1rem;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    50% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scroll-arrow {
+        animation: none;
+    }
 }
 
 @media (max-width: 768px) {

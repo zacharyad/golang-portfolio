@@ -47,7 +47,7 @@ func main() {
 
 	app.Static("/static", "./static")
 
-	log.Fatal(app.Listen(":" + os.Getenv("PORT")))
+	log.Fatal(app.Listen(":8080"))
 }
 
 func sendMail(eAddr, name, msg string) error {
