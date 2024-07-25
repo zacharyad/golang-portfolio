@@ -258,9 +258,9 @@ h1, h2, h3 {
 
 .project-link {
     display: inline-block;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     color: var(--secondary-color);
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .contact form {

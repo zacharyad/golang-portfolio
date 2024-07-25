@@ -41,13 +41,13 @@
         <h2>About Me</h2>
         <div class="about-content">
             <div class="about-text">
-                <p>I'm a passionate software engineer with expertise in full-stack development, creating user experiences, and making stuff (most importantly). With 5+ years of experience, I've delivered impactful solutions for customers.</p>
+                <p>I'm a passionate software engineer with expertise in full-stack development, creating user experiences, and making stuff (most importantly). I delivered impactful, efficient, and memorable solutions for customers.</p>
                 <ul class="skills-list">
                     <li>JavaScript/TypeScript (React, Node, express, tRPC)</li>
                     <li>HTML, CSS (Tailwind, ShadCn)</li>
                     <li>Golang (Fiber, Templ)</li>
                     <li>Selfhosting (Docker, linux, VPS)</li>
-                    <li>Embedded (C++, Arduino)</li>
+                    <li>Embedded/Hardware (C++, Arduino)</li>
                 </ul>
             </div>
             <div class="about-image">
@@ -61,19 +61,19 @@
         <div class="project-grid">
             <div class="project-card">
                 <h3>Stack Image API with landing page app</h3>
-                <p>An api written in golang that distributes images based on the tech stack you give it, and some options as to how you want it displayed. Intended use for github markdown or websites needing to display a quick list of tech stack logos. Currectly used withing this very site to display stack logos</p>
+                <p>An API written in Go-lang that distributes .png images based on the tech stack you give it, (including functionality of options as to how you want it displayed. Intended use for github markdown or websites needing to display a quick list of tech stack logos. Currectly used above (look up!) to display stack logos on this very site </p>
                
                 <a href="https://www.stackimages.xyz/" target="_blank" class="project-link">View Project</a>
             </div>
             <div class="project-card">
                 <h3>LockedShelf Platform</h3>
-                <p>Locked shelf is an application with active users acting as a digital gateway to buy, interact, and track puzzles from a physical book.</p>
+                <p>Locked shelf is an application with active users acting as a digital gateway to buy, interact, and track puzzles from a physical book. Extensive use of local storage (with smart versioning) to retain individual user progress all while reducing DB costs, increasing app speed, and gives users added control over their data.</p>
                 
                 <a href="https://www.lockedshelf.com/" class="project-link">View Project</a>
             </div>
             <div class="project-card">
-                <h3>Reservation Lookup Site (not deployed)</h3>
-                <p>Build a reservation lookup application to bridge the gap in existing 3rd party services capabilities using api to parse and retreive data to link with a waiver form.</p>
+                <h3>Reservation Lookup Site</h3>
+                <p>Build a reservation look-up application to bridge the gap in existing 3rd party services capabilities using api to parse and retreive data to link with a waiver form. This project highlights security of env variables, api use, and data manipulation using goroutines & mutexes to ensure data retention.</p>
             
                 <a href="https://github.com/zacharyad/qrWaiverSolution" class="project-link">View Project</a>
             </div>
@@ -90,7 +90,7 @@
         <h2 id="contact-title" >Get in Touch</h2>
         <form id="contact-form" action="/contactmsg" method="POST">
             <div class="input-group">
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" name="name"  required>
                 <label for="name">Name</label>
             </div>
             <div class="input-group">
@@ -98,7 +98,7 @@
                 <label for="email">Email</label>
             </div>
             <div class="input-group">
-                <textarea id="message" name="message" required></textarea>
+                <textarea id="message" name="message"  required></textarea>
                 <label for="message">Message</label>
             </div>
             <button id="contact-btn" type="submit">Send Message</button>
